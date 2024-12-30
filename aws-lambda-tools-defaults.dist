@@ -12,5 +12,5 @@
   "template": "serverless.template",
   "template-parameters": "\"Stage\"=\"_STAGE_\"",
   "s3-bucket": "_DEPLOYMENT_BUCKET_",
-  "stack-name": "STLServerlessNet-API_STAGE_"
+  "stack-name": "STLServerlessNET-API_STAGE_"
 }

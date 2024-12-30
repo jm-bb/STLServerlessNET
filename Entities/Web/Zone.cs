@@ -12,10 +12,10 @@ public class Zone
     public int CountryId { get; set; }
 
     [Column("code")]
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
     [Column("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [Column("status")]
     public int Status { get; set; }
