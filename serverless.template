@@ -1,0 +1,117 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application that uses the ASP.NET Core framework running in Amazon Lambda.",
+  "Parameters": {
+    "Stage": {
+        "Type": "String",
+        "Default": "dev",
+        "AllowedValues": ["dev", "test", "prod"],
+        "Description": "Deployment stage environment."
+    }
+  },
+  "Conditions": {},
+  "Resources": {
+    "ServiceApi": {
+      "Type": "AWS::Serverless::Api",
+      "Properties": {
+        "Name": {
+            "Fn::Sub": "STLServerlessNET-api-${Stage}"
+        },
+        "StageName": {
+            "Ref": "Stage"
+        },
+        "Auth": {
+          "ApiKeyRequired": true,
+          "UsagePlan": {
+            "UsagePlanName": {
+                "Fn::Sub": "STLServerlessNET-api-usage-plan-${Stage}"
+            },
+            "CreateUsagePlan": "PER_API",
+            "Description": "Usage plan for STLServerlessNET API."
+          }
+        }
+      }
+    },
+    "GetCarriers": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "STLServerlessNET::STLServerlessNET.LambdaEntryPoint::FunctionHandlerAsync",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "MemorySize": 512,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Events": {
+          "GetCarriersRoute": {
+            "Type": "Api",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ServiceApi"
+              },
+              "Path": "/service/carriers",
+              "Method": "GET",
+              "Auth": {
+                "ApiKeyRequired": true
+               }
+            }
+          }
+        },
+        "VpcConfig": {
+            "SecurityGroupIds": ["sg-0bfa10dc80fd8ab7e"],
+            "SubnetIds": ["subnet-03823aefd531b9721", "subnet-06828f4609610b35e"]
+        }
+      }
+    },
+    "GetZones": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "STLServerlessNET::STLServerlessNET.LambdaEntryPoint::FunctionHandlerAsync",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "MemorySize": 512,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Events": {
+          "GetZonesRoute": {
+            "Type": "Api",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ServiceApi"
+              },
+              "Path": "/web/zones",
+              "Method": "GET",
+              "Auth": {
+                "ApiKeyRequired": true
+               }
+            }
+          }
+        },
+        "VpcConfig": {
+            "SecurityGroupIds": ["sg-0bfa10dc80fd8ab7e"],
+            "SubnetIds": ["subnet-03823aefd531b9721", "subnet-06828f4609610b35e"]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API endpoint URL for Prod environment",
+      "Value": {
+        "Fn::Sub": "https://${ServiceApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+      }
+    },
+    "ApiKeyId": {
+      "Description": "Logical ID for API Key.",
+      "Value": {
+        "Fn::Sub": "${ServiceApi.ApiKey}"
+      }
+    }
+  }
+}

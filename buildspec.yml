@@ -1,0 +1,60 @@
+version: 0.2
+
+phases:
+    install:
+        runtime-versions:
+            dotnet: 8.0
+        commands:
+            - echo "Installing .NET 8 runtime"
+            - dotnet --version
+            - dotnet tool install -g Amazon.Lambda.Tools  # Installs AWS Lambda .NET CLI tools
+
+    pre_build:
+        commands:
+            - echo "Restoring dependencies"
+            - dotnet restore
+
+    build:
+        commands:
+            - echo "Building the project"
+            - mv aws-lambda-tools-defaults.dist aws-lambda-tools-defaults.json
+            - mv appsettings.dist appsettings.json
+            - sed -i -e "s/_REGION_/${AWS_REGION}/g" aws-lambda-tools-defaults.json
+            - sed -i -e "s/_PROFILE_/default/g" aws-lambda-tools-defaults.json
+            - sed -i -e "s/_STAGE_/${APP_ENV}/g" aws-lambda-tools-defaults.json
+            - sed -i -e "s/_DEPLOYMENT_BUCKET_/${DEPLOYMENT_BUCKET}/g" aws-lambda-tools-defaults.json
+
+            # Get the web database info
+            - SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id /web/stl-web/db-user-pass-${APP_ENV} --query SecretString --output text)
+            - WEB_USERNAME=$(echo $SECRET_JSON | jq -r .username)
+            - WEB_PASSWORD=$(echo $SECRET_JSON | jq -r .password)
+            - WEB_HOST=$(echo $SECRET_JSON | jq -r .host)
+            - WEB_DATABASE=$(echo $SECRET_JSON | jq -r .dbname)
+ 
+            # Get the api database info
+            - SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id /api/stl-service/db-user-pass-${APP_ENV} --query SecretString --output text)
+            - API_USERNAME=$(echo $SECRET_JSON | jq -r .username)
+            - API_PASSWORD=$(echo $SECRET_JSON | jq -r .password)
+            - API_HOST=$(echo $SECRET_JSON | jq -r .host)
+            - API_DATABASE=$(echo $SECRET_JSON | jq -r .dbname)
+            
+            # Replace placeholders in appsettings.json
+            - sed -i -e "s/_WEB_USERNAME_/$WEB_USERNAME/g" appsettings.json
+            - sed -i -e "s/_WEB_PASSWORD_/$WEB_PASSWORD/g" appsettings.json
+            - sed -i -e "s/_WEB_HOST_/$WEB_HOST/g" appsettings.json
+            - sed -i -e "s/_WEB_DATABASE_/$WEB_DATABASE/g" appsettings.json
+
+            - sed -i -e "s/_API_USERNAME_/$API_USERNAME/g" appsettings.json
+            - sed -i -e "s/_API_PASSWORD_/$API_PASSWORD/g" appsettings.json
+            - sed -i -e "s/_API_HOST_/$API_HOST/g" appsettings.json
+            - sed -i -e "s/_API_DATABASE_/$API_DATABASE/g" appsettings.json
+
+    post_build:
+        commands:
+            - echo "Deploying to AWS Serverless in ${AWS_REGION}"
+            - dotnet lambda deploy-serverless --region ${AWS_REGION}
+
+artifacts:
+    files:
+        - output/lambda-package.zip
+    discard-paths: yes

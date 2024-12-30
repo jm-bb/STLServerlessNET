@@ -1,0 +1,12 @@
+{
+  "ConnectionStrings": {
+    "ServiceConnection": "Server=_API_HOST_;Database=_API_DATABASE_;User Id=_API_USERNAME_;Password=_API_PASSWORD_;",
+    "WebConnection": "Server=_WEB_HOST_;Database=_WEB_DATABASE_;User Id=_WEB_USERNAME_;Password=_WEB_PASSWORD_;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
