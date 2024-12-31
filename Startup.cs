@@ -19,19 +19,14 @@ public class Startup
         string webDbConnString = Configuration.GetConnectionString("WebConnection")!;
 
         services.AddCors();
+        services.AddSingleton<MySqlConnectionFactory>(provider =>
+        {
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            return new MySqlConnectionFactory(configuration);
+        });
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        });
-
-        services.AddSingleton<MySqlConnection>(provider =>
-        {
-            return new MySqlConnection(serviceDbConnString);
-        });
-
-        services.AddSingleton(provider =>
-        {
-            return new MySqlConnection(webDbConnString);
         });
     }
 

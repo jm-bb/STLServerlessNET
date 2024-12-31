@@ -7,10 +7,10 @@ namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
 [Route("[controller]")]
-public class ServiceController(MySqlConnection serviceConnection, ILogger<ServiceController> logger) : ControllerBase
+public class ServiceController(MySqlConnectionFactory connectionFactory, ILogger<ServiceController> logger) : ControllerBase
 {
+    private readonly MySqlConnectionFactory _connectionFactory = connectionFactory;
     private readonly ILogger<ServiceController> _logger = logger;
-    private readonly MySqlConnection _serviceConnection = serviceConnection;
 
     [HttpGet("carriers")]
     public async Task<IActionResult> GetCarriers()
@@ -21,12 +21,14 @@ public class ServiceController(MySqlConnection serviceConnection, ILogger<Servic
 
         try
         {
-            await _serviceConnection.OpenAsync();
-            MySqlDataAdapter da = new MySqlDataAdapter(SqlQueries.Carriers, _serviceConnection);
+            var connection = _connectionFactory.CreateConnection("WebConnection");
+            await connection.OpenAsync();
+
+            MySqlDataAdapter da = new MySqlDataAdapter(SqlQueries.Carriers, connection);
             da.Fill(ds);
 
             string carrierJson = JsonConvert.SerializeObject(ds.Tables[0]);
-            await _serviceConnection.CloseAsync();
+            await connection.CloseAsync();
             return Ok(carrierJson);
         }
         catch (Exception ex)
