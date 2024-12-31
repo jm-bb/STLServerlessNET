@@ -6,7 +6,7 @@ namespace STLServerlessNET.Entities.Web;
 
 [Table("users")]
 [Index("UserEmail", Name = "user_email")]
-[Index("UserEmail", "UserPassword", "Active", Name = "user_email_user_password_active")]
+//[Index("UserEmail", "UserPassword", "Active", Name = "user_email_user_password_active")]
 public partial class User
 {
     [Key]
