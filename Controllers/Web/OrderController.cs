@@ -1,6 +1,7 @@
 using System.Data;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace STLServerlessNET.Controllers.Web;
 
@@ -32,7 +33,8 @@ public class OrderController : ControllerBase
             MySqlDataAdapter da = new MySqlDataAdapter(sql, _webConnection);
             da.Fill(ds);
 
-            return Ok(ds.Tables[0]);
+            string JSONresult = JsonConvert.SerializeObject(ds.Tables[0]);
+            return Ok(JSONresult);
         }
         catch
         {
