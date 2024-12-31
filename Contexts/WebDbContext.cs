@@ -28,9 +28,9 @@ public class WebDbContext : DbContext
 
         // Cart to Product (Many-to-One)
         modelBuilder.Entity<Cart>()
-            .HasOne(c => c.Product) // Navigation property in Cart
-            .WithMany(p => p.Carts) // Collection navigation property in Product
-            .HasForeignKey(c => c.ProdId) // Foreign key in Cart table
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(c => c.Product); // Navigation property in Cart
+            //.WithMany(p => p.Carts) // Collection navigation property in Product
+            //.HasForeignKey(c => c.ProdId) // Foreign key in Cart table
+            //.OnDelete(DeleteBehavior.Restrict);
     }
 }
