@@ -1,3 +1,5 @@
+using Mysqlx.Crud;
+
 struct SqlQueries
 {
     public const string EligibleOrder = @"select t1.order_id, t1.order_type, t1.user_id, t1.first_name, t1.last_name, t2.fishbowl_id, t1.email, t1.company, t1.phone, t1.bill_street, t1.bill_apt, t1.bill_apt_suffix, t1.bill_city, t1.bill_state,
@@ -15,6 +17,9 @@ struct SqlQueries
                                             u.ship_zip, us.ship_zip) as ship_zip, IF(u.shipping_id=0, u.ship_country, us.ship_country) as ship_country, u.shipping_id, u.active, u.tax_exempt, u.fishbowl_id, u.failed_attempts, u.unclaimed, u.auto_generated,
                                             u.last_failed_attempt_at, u.create_date, u.update_date, u.dealer_app_submitted, u.converted_from_user from users u left join user_billing ub on ub.id = u.billing_id left join user_shipping us on
                                             us.id = u.shipping_id where u.user_id in (_USER_ID_) and u.auto_generated=0 AND u.active='Y' and (u.billing_id > 0 OR LENGTH(u.bill_street) > 0) order by u.user_id;";
+
+    public const string OrderDetails = @"select oc.order_id, oc.quantity, oc.attributes, oc.aplus_warranty, p.prod_id, p.prod_name, oc.prod_sku, p.list_price, oc.purchase_price, p.taxable, p.product_type, null AS package_id, 0 as warranty,
+                                        oc.fishbowl_rule_id, p.n_packs, oc.cart_id, p.lightbar_type, p.category_for_url from cart oc inner join product p ON oc.prod_id=p.prod_id WHERE oc.order_id=_ORDER_ID_ order by product_type DESC";
 
     public const string Carriers = @"select * from carrier;";
 }

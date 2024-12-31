@@ -53,6 +53,11 @@ public class Startup
                 name: "GetOrderDetails",
                 pattern: "/web/order/{id:int}",
                 defaults: new { controller = "Order", action = "GetOrderDetails" });
+
+            endpoints.MapControllerRoute(
+                name: "GetCartDetails",
+                pattern: "/web/cart/{id:int}",
+                defaults: new { controller = "Cart", action = "GetCartDetails" });
         });
     }
 }

@@ -31,9 +31,41 @@ public class OrderController(MySqlConnectionFactory connectionFactory, ILogger<O
             MySqlDataAdapter da = new MySqlDataAdapter(sql, connection);
             da.Fill(ds);
 
+
             string orderJson = JsonConvert.SerializeObject(ds.Tables[0]);
             await connection.CloseAsync();
             return Ok(orderJson);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(500, "An internal server error occurred.");
+        }
+    }
+
+    [HttpGet("cart/{id}")]
+    public async Task<IActionResult> GetCartDetails(int id)
+    {
+        _logger.LogInformation("Calling ConvertOrderDetails()...");
+        _logger.LogInformation("Order ID:{@orderId}", id);
+
+        DataSet order = new DataSet("Order");
+        DataSet cart = new DataSet("Cart");
+
+        try
+        {
+            var connection = _connectionFactory.CreateConnection("WebConnection");
+            await connection.OpenAsync();
+
+            string sql = SqlQueries.OrderDetails.Replace("_ORDER_ID_", id.ToString());
+            MySqlDataAdapter da = new MySqlDataAdapter(sql, connection);
+            da.Fill(cart);
+
+            string orderJson = JsonConvert.SerializeObject(order.Tables[0]);
+            string cartJson = JsonConvert.SerializeObject(cart.Tables[0]);
+
+            await connection.CloseAsync();
+            return Ok(cartJson);
         }
         catch (Exception ex)
         {
