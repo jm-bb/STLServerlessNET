@@ -18,7 +18,7 @@ public class OrderController(WebDbContext webDbContext, ILogger<OrderController>
 
         // Query the order by its ID and include the related User
         var orderWithDetails = await _webDbContext.Orders
-            .Include(o => o.User)
+            //.Include(o => o.User)
             .Include(o => o.Carts)
             .ThenInclude(c => c.Product)
             .FirstOrDefaultAsync(o => o.OrderId == id);
