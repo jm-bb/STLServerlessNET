@@ -1,6 +1,7 @@
 using System.Data;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace STLServerlessNET.Controllers.Service;
 
@@ -22,17 +23,25 @@ public class ServiceController : ControllerBase
     {
         _logger.LogInformation("Calling GetCarriers()...");
 
-        DataSet ds = new DataSet("EligibleOrders");
+        DataSet ds = new DataSet("Carriers");
 
         try
         {
             await _serviceConnection.OpenAsync();
-            return Ok("carriers");
+            MySqlDataAdapter da = new MySqlDataAdapter("select * from carrier", _serviceConnection);
+            da.Fill(ds);
+
+            string carrierJson = JsonConvert.SerializeObject(ds.Tables[0]);
+            return Ok(carrierJson);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving carriers.");
             return StatusCode(500, "An internal server error occurred.");
+        }
+        finally
+        {
+            _serviceConnection.Close();
         }
     }
 }

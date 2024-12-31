@@ -33,12 +33,16 @@ public class OrderController : ControllerBase
             MySqlDataAdapter da = new MySqlDataAdapter(sql, _webConnection);
             da.Fill(ds);
 
-            string JSONresult = JsonConvert.SerializeObject(ds.Tables[0]);
-            return Ok(JSONresult);
+            string orderJson = JsonConvert.SerializeObject(ds.Tables[0]);
+            return Ok(orderJson);
         }
         catch
         {
             throw;
+        }
+        finally
+        {
+            _webConnection.Close();
         }
     }
 }
