@@ -10,7 +10,7 @@ public class ServiceController(ServiceDbContext serviceDbContext, ILogger<Servic
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
     private readonly ILogger<ServiceController> _logger = logger;
 
-    [HttpGet]
+    [HttpGet("carriers")]
     public async Task<ActionResult<IEnumerable<Carrier>>> GetCarriers()
     {
         try
