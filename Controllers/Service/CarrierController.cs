@@ -7,16 +7,10 @@ namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
 [Route("[controller]")]
-public class ServiceController : ControllerBase
+public class ServiceController(ServiceDatabaseService serviceDatabaseService, ILogger<ServiceController> logger) : ControllerBase
 {
-    private readonly ILogger<ServiceController> _logger;
-    private readonly MySqlConnection _serviceConnection;
-
-    public ServiceController(MySqlConnection serviceConnection, ILogger<ServiceController> logger)
-    {
-        _serviceConnection = serviceConnection;
-        _logger = logger;
-    }
+    private readonly ILogger<ServiceController> _logger = logger;
+    private readonly ServiceDatabaseService _serviceDatabaseService = serviceDatabaseService;
 
     [HttpGet("carriers")]
     public async Task<IActionResult> GetCarriers()
@@ -27,21 +21,18 @@ public class ServiceController : ControllerBase
 
         try
         {
-            await _serviceConnection.OpenAsync();
-            MySqlDataAdapter da = new MySqlDataAdapter(SqlQueries.Carriers, _serviceConnection);
+            await _serviceDatabaseService.Connection.OpenAsync();
+            MySqlDataAdapter da = new MySqlDataAdapter(SqlQueries.Carriers, _serviceDatabaseService.Connection);
             da.Fill(ds);
 
             string carrierJson = JsonConvert.SerializeObject(ds.Tables[0]);
+            await _serviceDatabaseService.Connection.CloseAsync();
             return Ok(carrierJson);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
+            _logger.LogError(ex, ex.Message);
             return StatusCode(500, "An internal server error occurred.");
-        }
-        finally
-        {
-            _serviceConnection.Close();
         }
     }
 }

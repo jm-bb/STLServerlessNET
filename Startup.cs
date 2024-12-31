@@ -19,15 +19,32 @@ public class Startup
         string webDbConnString = Configuration.GetConnectionString("WebConnection")!;
 
         services.AddCors();
+        services.AddSingleton<MySqlConnection>(sp =>
+        {
+            return new MySqlConnection(serviceDbConnString);
+        });
+
+        services.AddSingleton<MySqlConnection>(sp =>
+        {
+            return new MySqlConnection(webDbConnString);
+        });
+
+        services.AddSingleton<ServiceDatabaseService>(sp =>
+        {
+            var serviceConnection = sp.GetRequiredService<MySqlConnection>();
+            return new ServiceDatabaseService(serviceConnection);
+        });
+
+        services.AddSingleton<WebDatabaseService>(sp =>
+        {
+            var webConnection = sp.GetRequiredService<MySqlConnection>();
+            return new WebDatabaseService(webConnection);
+        });
+
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
-        //services.AddDbContext<ServiceDbContext>(options => options.UseMySql(serviceDbConnString, ServerVersion.AutoDetect(serviceDbConnString)));
-        //services.AddDbContext<WebDbContext>(options => options.UseMySql(webDbConnString, ServerVersion.AutoDetect(webDbConnString)));
-
-        services.AddSingleton(new MySqlConnection(serviceDbConnString));
-        services.AddSingleton(new MySqlConnection(webDbConnString));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

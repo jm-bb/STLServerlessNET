@@ -7,16 +7,10 @@ namespace STLServerlessNET.Controllers.Web;
 
 [ApiController]
 [Route("web/[controller]")]
-public class OrderController : ControllerBase
+public class OrderController(WebDatabaseService webDatabaseService, ILogger<OrderController> logger) : ControllerBase
 {
-    private readonly ILogger<OrderController> _logger;
-    private readonly MySqlConnection _webConnection;
-
-    public OrderController(MySqlConnection webConnection, ILogger<OrderController> logger)
-    {
-        _webConnection = webConnection;
-        _logger = logger;
-    }
+    private readonly ILogger<OrderController> _logger = logger;
+    private readonly WebDatabaseService _webDatabaseService = webDatabaseService;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderDetails(int id)
@@ -28,21 +22,19 @@ public class OrderController : ControllerBase
 
         try
         {
-            await _webConnection.OpenAsync();
+            await _webDatabaseService.Connection.OpenAsync();
             string sql = SqlQueries.EligibleOrder.Replace("_ORDER_ID_", id.ToString());
-            MySqlDataAdapter da = new MySqlDataAdapter(sql, _webConnection);
+            MySqlDataAdapter da = new MySqlDataAdapter(sql, _webDatabaseService.Connection);
             da.Fill(ds);
 
             string orderJson = JsonConvert.SerializeObject(ds.Tables[0]);
+            await _webDatabaseService.Connection.CloseAsync();
             return Ok(orderJson);
         }
-        catch
+        catch (Exception ex) {
         {
-            throw;
-        }
-        finally
-        {
-            _webConnection.Close();
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(500, "An internal server error occurred.");
         }
     }
 }
