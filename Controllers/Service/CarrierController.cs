@@ -36,7 +36,7 @@ public class ServiceController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving carriers.");
+            _logger.LogError(ex.Message);
             return StatusCode(500, "An internal server error occurred.");
         }
         finally
