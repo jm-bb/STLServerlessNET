@@ -43,11 +43,6 @@ public class Startup
                 defaults: new { controller = "Carrier", action = "GetCarriers" });
 
             endpoints.MapControllerRoute(
-                name: "GetZones",
-                pattern: "/web/zones",
-                defaults: new { controller = "Web", action = "GetZones" });
-
-            endpoints.MapControllerRoute(
                 name: "GetOrderDetails",
                 pattern: "/web/order/{id:int}",
                 defaults: new { controller = "Order", action = "GetOrderDetails" });

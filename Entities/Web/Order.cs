@@ -369,5 +369,6 @@ public partial class Order
     [Column("unpaid")]
     public float? Unpaid { get; set; }
 
-    public virtual User? User { get; set; }
+    public User? User { get; set; }
+    public ICollection<Cart> Carts { get; set; } = new List<Cart>();
 }
