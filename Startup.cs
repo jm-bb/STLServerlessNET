@@ -19,31 +19,19 @@ public class Startup
         string webDbConnString = Configuration.GetConnectionString("WebConnection")!;
 
         services.AddCors();
-        services.AddSingleton<MySqlConnection>(sp =>
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
+
+        services.AddSingleton<MySqlConnection>(provider =>
         {
             return new MySqlConnection(serviceDbConnString);
         });
 
-        services.AddSingleton<MySqlConnection>(sp =>
+        services.AddSingleton(provider =>
         {
             return new MySqlConnection(webDbConnString);
-        });
-
-        services.AddSingleton<ServiceDatabaseService>(sp =>
-        {
-            var serviceConnection = sp.GetRequiredService<MySqlConnection>();
-            return new ServiceDatabaseService(serviceConnection);
-        });
-
-        services.AddSingleton<WebDatabaseService>(sp =>
-        {
-            var webConnection = sp.GetRequiredService<MySqlConnection>();
-            return new WebDatabaseService(webConnection);
-        });
-
-        services.AddControllers().AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
     }
 

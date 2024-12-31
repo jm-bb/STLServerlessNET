@@ -7,10 +7,10 @@ namespace STLServerlessNET.Controllers.Web;
 
 [ApiController]
 [Route("web/[controller]")]
-public class OrderController(WebDatabaseService webDatabaseService, ILogger<OrderController> logger) : ControllerBase
+public class OrderController([FromServices] MySqlConnection webConnection, ILogger<OrderController> logger) : ControllerBase
 {
     private readonly ILogger<OrderController> _logger = logger;
-    private readonly WebDatabaseService _webDatabaseService = webDatabaseService;
+    private readonly MySqlConnection _webConnection = webConnection;
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderDetails(int id)
@@ -22,13 +22,13 @@ public class OrderController(WebDatabaseService webDatabaseService, ILogger<Orde
 
         try
         {
-            await _webDatabaseService.Connection.OpenAsync();
+            await _webConnection.OpenAsync();
             string sql = SqlQueries.EligibleOrder.Replace("_ORDER_ID_", id.ToString());
-            MySqlDataAdapter da = new MySqlDataAdapter(sql, _webDatabaseService.Connection);
+            MySqlDataAdapter da = new MySqlDataAdapter(sql, _webConnection);
             da.Fill(ds);
 
             string orderJson = JsonConvert.SerializeObject(ds.Tables[0]);
-            await _webDatabaseService.Connection.CloseAsync();
+            await _webConnection.CloseAsync();
             return Ok(orderJson);
         }
         catch (Exception ex)
