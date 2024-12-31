@@ -319,5 +319,5 @@ public partial class Product
     //[Column("whats_included", TypeName = "text")]
     //public string? WhatsIncluded { get; set; }
 
-    //public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+    public ICollection<Cart> Carts { get; set; } = new List<Cart>();
 }
