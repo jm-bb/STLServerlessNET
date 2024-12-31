@@ -10,11 +10,12 @@ public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderCon
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
     private readonly ILogger<OrderController> _logger = logger;
 
-    [HttpGet("order/{id}")]
-    public async Task<IActionResult> GetOrderDetails(int id)
+    [HttpGet]
+    [Route("order")]
+    public async Task<IActionResult> GetOrderDetails()
     {
         _logger.LogInformation("Calling GetOrderDetails()...");
-        _logger.LogInformation("Order ID:{@orderId}", id);
+        //_logger.LogInformation("Order ID:{@orderId}", id);
 
         return Ok("ok");
         //// Query the order by its ID and include the related User

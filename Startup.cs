@@ -39,7 +39,7 @@ public class Startup
         {
             endpoints.MapControllerRoute(
                 name: "GetOrderDetails",
-                pattern: "/service/order/{id:int}",
+                pattern: "/service/order",
                 defaults: new { controller = "Order", action = "GetOrderDetails" });
 
             endpoints.MapControllerRoute(
