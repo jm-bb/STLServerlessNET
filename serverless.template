@@ -98,6 +98,39 @@
             "SubnetIds": ["subnet-03823aefd531b9721", "subnet-06828f4609610b35e"]
         }
       }
+    },
+    "GetOrderDetails": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "STLServerlessNET::STLServerlessNET.LambdaEntryPoint::FunctionHandlerAsync",
+        "Runtime": "dotnet8",
+        "CodeUri": "",
+        "MemorySize": 512,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Events": {
+          "GetOrderDetailsRoute": {
+            "Type": "Api",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ServiceApi"
+              },
+              "Path": "/service/order/{id}",
+              "Method": "GET",
+              "Auth": {
+                "ApiKeyRequired": true
+               }
+            }
+          }
+        },
+        "VpcConfig": {
+            "SecurityGroupIds": ["sg-0bfa10dc80fd8ab7e"],
+            "SubnetIds": ["subnet-03823aefd531b9721", "subnet-06828f4609610b35e"]
+        }
+      }
     }
   },
   "Outputs": {
