@@ -118,7 +118,7 @@
               "RestApiId": {
                 "Ref": "ServiceApi"
               },
-              "Path": "/service/order",
+              "Path": "/service/order/{id}",
               "Method": "GET",
               "Auth": {
                 "ApiKeyRequired": true

@@ -11,14 +11,14 @@ public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderCon
     private readonly ILogger<OrderController> _logger = logger;
 
     [HttpGet]
-    [Route("order")]
+    [Route("{id}")]
     //public async Task<IActionResult> GetOrderDetails()
-    public async Task<ActionResult<string>> GetOrderDetails()
+    public async Task<ActionResult<int>> GetOrderDetails(int id)
     {
         _logger.LogInformation("Calling GetOrderDetails()...");
-        //_logger.LogInformation("Order ID:{@orderId}", id);
+        _logger.LogInformation("Order ID:{@orderId}", id);
 
-        return Ok("ok");
+        return Ok(id);
         //// Query the order by its ID and include the related User
         //var order = await _serviceDbContext.Orders
         //                          .Include(o => o.User) // Include the related User
