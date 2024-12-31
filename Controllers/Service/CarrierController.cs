@@ -28,7 +28,7 @@ public class ServiceController : ControllerBase
         try
         {
             await _serviceConnection.OpenAsync();
-            MySqlDataAdapter da = new MySqlDataAdapter("select * from carrier", _serviceConnection);
+            MySqlDataAdapter da = new MySqlDataAdapter(SqlQueries.Carriers, _serviceConnection);
             da.Fill(ds);
 
             string carrierJson = JsonConvert.SerializeObject(ds.Tables[0]);

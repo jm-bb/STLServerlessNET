@@ -15,4 +15,6 @@ struct SqlQueries
                                             u.ship_zip, us.ship_zip) as ship_zip, IF(u.shipping_id=0, u.ship_country, us.ship_country) as ship_country, u.shipping_id, u.active, u.tax_exempt, u.fishbowl_id, u.failed_attempts, u.unclaimed, u.auto_generated,
                                             u.last_failed_attempt_at, u.create_date, u.update_date, u.dealer_app_submitted, u.converted_from_user from users u left join user_billing ub on ub.id = u.billing_id left join user_shipping us on
                                             us.id = u.shipping_id where u.user_id in (_USER_ID_) and u.auto_generated=0 AND u.active='Y' and (u.billing_id > 0 OR LENGTH(u.bill_street) > 0) order by u.user_id;";
+
+    public const string Carriers = @"select * from carrier;";
 }
