@@ -4,14 +4,13 @@ using Microsoft.EntityFrameworkCore;
 namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
-[Route("[controller]")]
+[Route("service/[controller]")]
 public class ServiceController(ServiceDbContext serviceDbContext, ILogger<ServiceController> logger) : ControllerBase
 {
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
     private readonly ILogger<ServiceController> _logger = logger;
 
-    [HttpGet]
-    [Route("carriers")]
+    [HttpGet("carriers")]
     public async Task<ActionResult<IEnumerable<Carrier>>> GetCarriers()
     {
         try
