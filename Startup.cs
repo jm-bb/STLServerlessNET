@@ -38,9 +38,15 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute(
+                name: "GetOrder",
+                pattern: "/service/order/{id?}",
+                defaults: new { controller = "Order", action = "GetOrderById" }
+            );
+
+            endpoints.MapControllerRoute(
                 name: "GetCarriers",
                 pattern: "/service/carriers",
-                defaults: new { controller = "Service", action = "GetCarriers" });
+                defaults: new { controller = "Carrier", action = "GetCarriers" });
 
             endpoints.MapControllerRoute(
                 name: "GetZones",

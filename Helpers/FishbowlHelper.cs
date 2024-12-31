@@ -1,0 +1,2212 @@
+using System.Text;
+using System.Net;
+using System.Xml;
+using System.Xml.Linq;
+using System.Data;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using STLServerlessNET.Models;
+
+namespace STLServerlessNET.Helpers;
+
+public class FishbowlHelper
+{
+    private FbiCountry _countryList;
+    private FbiState _stateList;
+
+    public FishbowlHelper()
+    {
+    }
+
+    public string GetFormattedPhoneNumber(string input)
+    {
+        try
+        {
+            string phone = "";
+            string pattern = @"\d";
+
+            StringBuilder sb = new StringBuilder();
+            foreach (Match m in Regex.Matches(input, pattern))
+            {
+                sb.Append(m);
+            }
+
+            phone = sb.ToString();
+            if (phone.Length == 10 || phone.Length == 11)
+            {
+                return FormatNumber(phone);
+            }
+            else
+            {
+                return input;
+            }
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    private static string FormatNumber(string input)
+    {
+        try
+        {
+            string firstNumber = input[0].ToString();
+            if (firstNumber == "1")
+            {
+                if (input.Length == 10)
+                {
+                    return string.Format("{0:###-###-####}", Convert.ToInt64(input));
+                }
+                else if (input.Length == 11)
+                {
+                    return string.Format("{0:#-###-###-####}", Convert.ToInt64(input));
+                }
+                else
+                {
+                    return input;
+                }
+            }
+            else
+            {
+                if (input.Length == 10)
+                {
+                    return string.Format("{0:###-###-####}", Convert.ToInt64(input));
+                }
+                else
+                {
+                    return input;
+                }
+            }
+
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    private static string FormatXml(string inputXml)
+    {
+        XmlDocument document = new XmlDocument();
+        document.Load(new StringReader(inputXml));
+
+        StringBuilder builder = new StringBuilder();
+        using (XmlTextWriter writer = new XmlTextWriter(new StringWriter(builder)))
+        {
+            writer.Formatting = System.Xml.Formatting.Indented;
+            document.Save(writer);
+        }
+
+        return builder.ToString();
+    }
+
+
+    public string GetTicketKey(string xml)
+    {
+        try
+        {
+            string ticket = "";
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing("Key");
+                ticket = reader.ReadElementContentAsString();
+            }
+
+            return ticket;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public Dictionary<string, string> GetSOSaveResponseCode(string xml)
+    {
+        try
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing("SaveSORs");
+                for (int x = 0; x < reader.AttributeCount; x++)
+                {
+                    reader.MoveToAttribute(x);
+                    dict.Add(reader.Name, reader.Value);
+                }
+            }
+
+            return dict;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public Dictionary<string, string> GetResponseStatusCode(string xml, string node)
+    {
+        try
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing(node);
+                for (int x = 0; x < reader.AttributeCount; x++)
+                {
+                    reader.MoveToAttribute(x);
+                    dict.Add(reader.Name, reader.Value);
+                }
+            }
+
+            return dict;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+
+    public Dictionary<string, string> GetCustomerSaveResponseCode(string xml)
+    {
+        try
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing("CustomerSaveRs");
+                for (int x = 0; x < reader.AttributeCount; x++)
+                {
+                    reader.MoveToAttribute(x);
+                    dict.Add(reader.Name, reader.Value);
+                }
+            }
+
+            return dict;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetCustomerSaveRsCode(string xml)
+    {
+        try
+        {
+            string statusCode = "";
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing("CustomerSaveRs");
+                reader.MoveToFirstAttribute();
+                statusCode = reader.Value;
+            }
+
+            return statusCode;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetCustomerSaveResponseID(string xml)
+    {
+        try
+        {
+            string customerId = "";
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                if (reader.ReadToFollowing("Name"))
+                {
+                    customerId = reader.ReadElementContentAsString();
+                }
+            }
+            return customerId;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetValueFromXml(string xml, string searchField)
+    {
+        try
+        {
+            string soId = "";
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing(searchField);
+                soId = reader.ReadElementContentAsString();
+            }
+            return soId;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetSOSaveResponseID(string xml)
+    {
+        try
+        {
+            string soId = "";
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing("Number");
+                soId = reader.ReadElementContentAsString();
+            }
+            return soId;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetStatusCode(string xml)
+    {
+        try
+        {
+            string statusCode = "";
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            {
+                reader.ReadToFollowing("FbiMsgsRs");
+                reader.MoveToFirstAttribute();
+                statusCode = reader.Value;
+            }
+
+            return statusCode;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetCustomer(string ticket, string name)
+    {
+        try
+        {
+            string xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><CustomerGetRq><Name>" + name + "</Name></CustomerGetRq></FbiMsgsRq></FbiXml>";
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetSalesOrder(string ticket, int orderId)
+    {
+        try
+        {
+            string xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><LoadSORq><Number>" + orderId + "</Number></LoadSORq></FbiMsgsRq></FbiXml>";
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string ProcessSO(string ticket, DataRow order, DataTable orderDetails, string orderType, DataTable carrierServices, DataTable boxDt)
+    {
+        List<Coupon> orderCoupons = null;
+        try
+        {
+            string xml = "";
+            string orderId = order["order_id"].ToString().Trim();
+
+            if (order["fishbowl_id"].ToString().Length <= 0)
+            {
+                //This is an invalid user who has not been linked yet. Process customers first.
+                xml += "<?xml version=\"1.0\" encoding=\"utf-16\"?><FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRs statusCode=\"1000\">";
+                xml += "<SaveSORs statusCode=\"3001\" statusMessage=\"Customer not linked. Process customer.\" /></FbiMsgsRs></FbiXml>";
+                return xml;
+            }
+
+            //Check if a package deal.
+            bool hasPackage = false;
+            bool hasGiftCard = false;
+            bool hasFullLightbar = HasFullLightbar(orderDetails);
+            Dictionary<string, double> giftCardList = new Dictionary<string, double>();
+
+            string customBar = "";
+            foreach (DataRow detailRow in orderDetails.Rows)
+            {
+                if (detailRow["product_type"].ToString() == "package")
+                {
+                    hasPackage = true;
+                    break;
+                }
+
+                if (Convert.ToInt32(detailRow["CustomBar"]) > 0)
+                {
+                    customBar += "\r\n";
+                    customBar += "https://www.speedtechlights.com/lightbars/preview?id=" + detailRow["CustomBar"].ToString();
+                }
+            }
+
+            //hasGiftCard = true;
+            for (int x = 1; x < 4; x++)
+            {
+                string gfSuffix = x > 1 ? $"{x}" : "";
+                string gfNumber = order[$"giftcard_number{gfSuffix}"].ToString().Trim();
+                double gfPayment = Convert.ToDouble(order[$"giftcard_payment{gfSuffix}"].ToString().Trim().Length <= 0 ? 0 : order[$"giftcard_payment{gfSuffix}"]);
+                if (gfNumber.Length > 0 && gfPayment > 0)
+                {
+                    giftCardList.Add(gfNumber, gfPayment);
+                }
+            }
+
+            if (giftCardList.Count > 0) { hasGiftCard = true; }
+
+            string orderNote = "";
+            string carrier = "";
+            string service = "";
+            int points_claimed = Convert.ToInt32(order["points_claimed"]);
+            string referred_id = order["referred_by"].ToString();
+            string referred_name = order["referred_by_name"].ToString();
+            string shipping_method = order["shipping_method"].ToString().Trim();
+            bool isInternational = order["ship_country"].ToString().Trim().ToLower() != "us";
+            int priorityProcessing = Convert.ToInt16(order["priority_processing"]);
+            int containsCustomLightbar = Convert.ToInt16(order["contains_custom_lightbar"]);
+            shipping_method = shipping_method.Replace("*", "");
+            string company = order["company"].ToString().Trim();
+            decimal orderTotal = Convert.ToDecimal(order["sub_total"]);
+
+            string tax_exempt = order["tax_exempt"].ToString();
+            bool hasTaxFreeCoupon = HasTaxFree(order);
+
+            DateTime time = DateTime.Now;
+
+            //Get the correct country if its certains states like Puerto Rico, Guam, etc.
+            order["bill_country"] = GetCorrectCountry(order["bill_state"].ToString(), order["bill_country"].ToString());
+            order["ship_country"] = GetCorrectCountry(order["ship_state"].ToString(), order["ship_country"].ToString());
+
+            if (shipping_method.Equals("Fedex 2 Day"))
+            {
+                shipping_method = "FedEx 2-Day";
+            }
+
+            // t1.Enrolled, t1.PAResStatus, t1.SignatureVerification
+            orderNote += "Web Order ID: " + order["order_id"].ToString() + "\r\nCardinal: ";
+
+            orderNote += SetCardinal(order["Enrolled"].ToString());
+            orderNote += "-" + SetCardinal(order["PAResStatus"].ToString());
+            orderNote += "-" + SetCardinal(order["SignatureVerification"].ToString());
+
+            orderNote += "\r\n\r\nPhone: " + order[8].ToString() + "\r\nEmail: " + order[6].ToString();
+            if (referred_name.Length > 0)
+            {
+                orderNote += "\r\n\r\nReferral Name: " + referred_name + "\r\nReferral ID: " + referred_id + "\r\n";
+            }
+
+            if (hasPackage)
+            {
+                orderNote += "\r\nVehicle Package";
+            }
+
+            if (hasGiftCard)
+            {
+                int cardIndex = 1;
+                foreach (KeyValuePair<string, double> giftCard in giftCardList)
+                {
+                    orderNote += $"\r\nGift Card Number {cardIndex}: {giftCard.Key}";
+                    cardIndex++;
+                }
+            }
+
+            if (customBar != "")
+            {
+                orderNote += "\r\n" + customBar;
+            }
+
+            if (shipping_method.Trim().ToLower().Equals("ups ground free shipping") || shipping_method.Trim().ToLower().Equals("free shipping"))
+            {
+                carrier = "UPS";
+                string expression = "Name = 'Ground'";
+                DataRow[] foundRows;
+
+                // Use the Select method to find all rows matching the filter.
+                foundRows = carrierServices.Select(expression);
+                foreach (DataRow fr in foundRows)
+                {
+                    service = "<CarrierServiceID>" + fr[0].ToString() + "</CarrierServiceID>";
+                }
+            }
+            else if (shipping_method.Trim().ToLower().Equals("ups surepost free shipping"))
+            {
+                carrier = "UPS";
+                string expression = "Name = 'SurePost'";
+                DataRow[] foundRows = carrierServices.Select(expression);
+                foreach (DataRow fr in foundRows)
+                {
+                    service = "<CarrierServiceID>" + fr[0].ToString() + "</CarrierServiceID>";
+                }
+            }
+            else
+            {
+                if (shipping_method.Trim().ToLower().Contains("international"))
+                {
+                    carrier = "UPS International";
+                    shipping_method = shipping_method.Trim().ToLower().Replace("ups international ", "").Replace("worldwide ", "");
+
+                    string expression = "Name = '" + shipping_method + "'";
+                    DataRow[] foundRows;
+
+                    // Use the Select method to find all rows matching the filter.
+                    foundRows = carrierServices.Select(expression);
+                    foreach (DataRow fr in foundRows)
+                    {
+                        service = "<CarrierServiceID>" + fr[0].ToString() + "</CarrierServiceID>";
+                    }
+                }
+                else
+                {
+                    shipping_method = shipping_method.Trim().ToLower().Replace("ups ", "").Replace("second", "2nd").Replace("three", "3").Replace("-", " ");
+                    if (isInternational && shipping_method.Contains("access point delivery"))
+                    {
+                        carrier = "UPS International";
+                        shipping_method = shipping_method.Trim().ToLower().Replace("ups international ", "").Replace("worldwide ", "");
+
+                        string expression = "Name = 'international " + shipping_method + "'";
+                        DataRow[] foundRows;
+
+                        // Use the Select method to find all rows matching the filter.
+                        foundRows = carrierServices.Select(expression);
+                        foreach (DataRow fr in foundRows)
+                        {
+                            service = "<CarrierServiceID>" + fr[0].ToString() + "</CarrierServiceID>";
+                        }
+                    }
+                    else
+                    {
+                        carrier = "UPS";
+                        string expression = "Name = '" + shipping_method + "'";
+                        DataRow[] foundRows;
+
+                        // Use the Select method to find all rows matching the filter.
+                        foundRows = carrierServices.Select(expression);
+                        foreach (DataRow fr in foundRows)
+                        {
+                            service = "<CarrierServiceID>" + fr[0].ToString() + "</CarrierServiceID>";
+                        }
+                    }
+                }
+            }
+
+            xml = @"<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><SOSaveRq><SalesOrder><Note>[*REPLACE_NOTES*]</Note><Salesman>admin</Salesman><Carrier>" + carrier + "</Carrier>" + service;
+
+            string tax = "true";
+            string coName = order[7].ToString().Trim();
+            coName = coName.Length > 38 ? WebUtility.HtmlEncode(coName.Substring(0, 37)) : WebUtility.HtmlEncode(coName);
+            if (orderType.ToLower().Trim() == "dealer")
+            {
+                xml += "<TaxRateName>None</TaxRateName>";
+                tax = "false";
+            }
+            else if (order["ship_state"].ToString().ToLower() == "tx" || order["ship_state"].ToString().ToLower() == "texas" || order["ship_state"].ToString().ToLower() == "tx.")
+            {
+                xml += "<TaxRateName>Texas</TaxRateName>";
+                tax = "true";
+
+                if (tax_exempt.ToLower() == "y")
+                {
+                    xml = xml.Replace("<TaxRateName>Texas</TaxRateName>", "<TaxRateName>None</TaxRateName>");
+                    tax = "false";
+                }
+            }
+            else
+            {
+                xml += "<TaxRateName>None</TaxRateName>";
+                tax = "false";
+            }
+
+            xml += "<PaymentTerms>CCD</PaymentTerms><CustomerPO>" + order["order_id"].ToString() + "</CustomerPO>";
+            xml += "<CustomerName>" + WebUtility.HtmlEncode(order["fishbowl_id"].ToString()) + "</CustomerName>";
+
+            string fullName = order["first_name"].ToString().Trim() + " " + order["last_name"].ToString().Trim();
+            string nameSuffix = order["suffix"].ToString().Trim().Length > 0 ? order["suffix"].ToString().Trim() : "";
+            fullName = nameSuffix.Length > 0 ? fullName + " " + nameSuffix : fullName;
+            fullName = fullName.Length > 38 ? fullName.Substring(0, 37) : fullName;
+
+            //Bill Address
+            string billApt = WebUtility.HtmlEncode(order["bill_apt"].ToString().Trim());
+            string billAptSuffix = WebUtility.HtmlEncode(order["bill_apt_suffix"].ToString().Trim());
+            string billingAddress = WebUtility.HtmlEncode(order["bill_street"].ToString().Trim());
+            if (billApt.Length > 0 && billAptSuffix.Length > 0)
+            {
+                billingAddress += "&#xA;" + billAptSuffix + " " + billApt;
+            }
+            else
+            {
+                if (billApt.Length > 0 && billAptSuffix.Length == 0)
+                {
+                    billingAddress += "&#xA;" + billApt;
+                }
+
+                if (billApt.Length == 0 && billAptSuffix.Length > 0)
+                {
+                    billingAddress += "&#xA;" + billAptSuffix;
+                }
+            }
+
+
+            if (coName.Length <= 0)
+            {
+                xml += "<BillTo><Name>" + fullName + "</Name><AddressField>" + billingAddress + "</AddressField>";
+                xml += "<City>" + order["bill_city"].ToString() + "</City><Zip>" + order["bill_zip"].ToString() + "</Zip><Country>" + order["bill_country"].ToString() + "</Country>";
+                xml += "<State>" + order["bill_state"].ToString() + "</State></BillTo>";
+            }
+            else
+            {
+                if (IsBadName(coName))
+                {
+                    xml += "<BillTo><Name>" + fullName + "</Name><AddressField>" + billingAddress + "</AddressField>";
+                }
+                else
+                {
+                    xml += "<BillTo><Name>" + coName + "</Name><AddressField>" + fullName + "&#xA;" + billingAddress + "</AddressField>";
+                }
+                xml += "<City>" + order["bill_city"].ToString() + "</City><Zip>" + order["bill_zip"].ToString() + "</Zip><Country>" + order["bill_country"].ToString() + "</Country>";
+                xml += "<State>" + order["bill_state"].ToString() + "</State></BillTo>";
+            }
+
+            xml += "<Ship>";
+            if (coName.Length > 0)
+            {
+                if (IsBadName(coName))
+                {
+                    xml += "<Name>" + fullName + "</Name>";
+                }
+                else
+                {
+                    xml += "<Name>" + coName + "</Name>";
+                }
+            }
+            else
+            {
+                xml += "<Name>" + fullName + "</Name>";
+            }
+
+            string shipApt = WebUtility.HtmlEncode(order["ship_apt"].ToString().Trim());
+            string shipAptSuffix = WebUtility.HtmlEncode(order["ship_apt_suffix"].ToString().Trim());
+            string shipAddress = WebUtility.HtmlEncode(order["ship_street"].ToString().Trim());
+            string attention = WebUtility.HtmlEncode(order["attention"].ToString().Trim());
+
+            if (shipping_method == "access point delivery")
+            {
+                xml += "<AddressField>" + shipApt + "&#xA;" + shipAddress.Replace("&lt;br/&gt;", " ") + "</AddressField>";
+            }
+            else
+            {
+                if (shipApt.Length > 0 && shipAptSuffix.Length > 0)
+                {
+                    xml += "<AddressField>" + shipAddress + "&#xA;" + shipAptSuffix + " " + shipApt + "</AddressField>";
+                }
+                else
+                {
+                    if (shipAptSuffix.Length > 0 && shipApt.Length == 0)
+                    {
+                        xml += "<AddressField>" + shipAddress + "&#xA;" + shipAptSuffix + "</AddressField>";
+                    }
+                    else if (shipAptSuffix.Length == 0 && shipApt.Length > 0)
+                    {
+                        xml += "<AddressField>" + shipAddress + "&#xA;" + shipApt + "</AddressField>";
+                    }
+                    else
+                    {
+                        xml += "<AddressField>" + shipAddress + "</AddressField>";
+                    }
+                }
+            }
+
+            xml += "<City>" + order["ship_city"].ToString().Trim() + "</City><Zip>" + order["ship_zip"].ToString().Trim() + "</Zip><Country>" + order["ship_country"].ToString().Trim() + "</Country>";
+            xml += "<State>" + order["ship_state"].ToString().Trim() + "</State></Ship>";
+            if (attention.Length > 0)
+            {
+                xml += "<CustomerContact>" + attention + "</CustomerContact>";
+            }
+            else
+            {
+                xml += "<CustomerContact>" + fullName + "</CustomerContact>";
+            }
+
+            xml += "<CustomFields>";
+            xml += "<CustomField><ID>13</ID><Name>CF-Order Type</Name><SortOrder>1</SortOrder><Info>Order</Info><RequiredFlag>true</RequiredFlag><ActiveFlag>true</ActiveFlag></CustomField>";
+            xml += "<CustomField><ID>15</ID><Name>CF-Sales Rep</Name><SortOrder>1</SortOrder><Info>" + referred_name + "</Info><RequiredFlag>true</RequiredFlag><ActiveFlag>true</ActiveFlag></CustomField>";
+            xml += "</CustomFields>";
+            xml += "<*MEMO*>";
+
+            //Get the attributes and put the info into arrays.
+            //List products
+            xml += "<Items>";
+            int rowCount = 0;
+
+            //List<string> boxNotes = new List<string>();
+            DataTable boxNotes = new DataTable();
+            boxNotes.Columns.Add("prodId", typeof(int));
+            boxNotes.Columns.Add("prodSku", typeof(string));
+            boxNotes.Columns.Add("qty", typeof(int));
+            boxNotes.Columns.Add("box", typeof(string));
+
+            List<string> appliedCategoryCoupon = new List<string>();
+            List<string> couponCategoryIds = GetListOfCouponCategoryIds(order["coupon_code"].ToString().Trim());
+            if (couponCategoryIds.Count > 0)
+            {
+                //Reorder the orderDetails table.
+                EnumerableRowCollection<DataRow> orderDetailResults = orderDetails.AsEnumerable().Where((s) =>
+                {
+                    string[] c = s["CategoryIds"].ToString().Split(',');
+                    return couponCategoryIds.Any(x => c.Any(y => y == x));
+                });
+                if (orderDetailResults.Count() > 0)
+                {
+                    DataTable dt1 = orderDetailResults.CopyToDataTable();
+                    List<string> cartIds = dt1.AsEnumerable().Select(x => x["cart_id"].ToString()).Distinct().ToList();
+
+                    EnumerableRowCollection<DataRow> orderDetailResultsNot = orderDetails.AsEnumerable().Where(s => !cartIds.Contains(s["cart_id"].ToString()));
+                    if (orderDetailResultsNot.Count() > 0)
+                    {
+                        dt1.Merge(orderDetailResultsNot.CopyToDataTable());
+                        dt1.AcceptChanges();
+                    }
+                    orderDetails = dt1;
+                }
+            }
+            foreach (DataRow row in orderDetails.Rows)
+            {
+                bool showItem = true;
+                string mountXml = "";
+                string attributeNotes = "";
+                double price = 0.00;
+                double attribPrice = 0.00;
+                price = Convert.ToDouble(row["purchase_price"]);
+
+                string prodId = row["prod_id"].ToString();
+                string prodName = row["prod_sku"].ToString();
+                string prodDesc = WebUtility.HtmlEncode(row["prod_name"].ToString());
+                var primary_attribs = JsonConvert.DeserializeObject<List<string>>(row["primary_attrib"].ToString());
+                string pack = row["n_packs"].ToString();
+                int discountPack = Convert.ToInt32(row["DiscountPack"]);
+                //string catId = row["category_for_url"].ToString();
+                string[] prodCatIds = row["CategoryIds"].ToString().Split(',');
+                string lightbarType = row["lightbar_type"].ToString().Trim();
+
+                if (row["taxable"].ToString() == "N" || hasTaxFreeCoupon)
+                {
+                    tax = "false";
+                }
+
+                double warrantyPrice = 0;
+                if (row["aplus_warranty"].ToString() == "Y")
+                {
+                    attributeNotes += "A+ Warranty + $" + string.Format("{0:C}", row["warranty"].ToString()) + "\n  ";
+                    warrantyPrice = Convert.ToDouble(row["warranty"]);
+                }
+
+                double itemPrice = price + warrantyPrice;
+                int row_qty = Convert.ToInt32(row["quantity"]);
+
+                string[] attributes = row["attributes"].ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                int ruleid = (int)row["fishbowl_rule_id"];
+                if (ruleid != 7)
+                {
+                    ruleid = 7;
+                }
+
+                switch (ruleid)
+                {
+                    case 7: //New one to one
+                        switch (pack.ToLower())
+                        {
+                            case "bundles":
+                                showItem = false;
+                                foreach (string attribute in attributes)
+                                {
+                                    string[] attribValues = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+
+                                    //Add misc sale item if price is greater than zero?
+                                    if (Convert.ToDouble(attribValues[2]) > 0 && attribValues.Length <= 4)
+                                    {
+                                        int attribQty = Convert.ToInt32(row["quantity"]) * Convert.ToInt32(attribValues[3]);
+
+                                        double pricePer = 0.0;
+                                        pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+
+                                        attribPrice += Convert.ToDouble(attribValues[2]);
+                                        mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(prodName) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode>ea</UOMCode><ItemType>11</ItemType>";
+                                        mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                        boxNotes.Rows.Add(prodId, prodName, attribQty);
+                                    }
+
+                                    if (attribValues.Length > 4)
+                                    {
+                                        prodName = attribValues[4].ToString();
+                                        int attribQty = Convert.ToInt32(row["quantity"]) * Convert.ToInt32(attribValues[3]);
+
+                                        double pricePer = 0.0;
+                                        if (primary_attribs != null)
+                                        {
+                                            if (!primary_attribs.Contains(attribValues[0]))
+                                            {
+                                                pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+                                            }
+                                            else
+                                            {
+                                                pricePer = (itemPrice + Convert.ToDouble(attribValues[2])) / Convert.ToDouble(attribValues[3]);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+                                        }
+
+                                        attribPrice += Convert.ToDouble(attribValues[2]);
+
+                                        mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                        mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                        boxNotes.Rows.Add(prodId, attribValues[4].ToString(), attribQty);
+                                    }
+                                }
+                                break;
+                            case "none":
+                                showItem = true;
+                                //If pack is none and it has a primary attribute. Do not show the product sku and use the attribute SKUs.
+                                foreach (string attribute in attributes)
+                                {
+                                    string[] attribValues = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+                                    if (primary_attribs != null)
+                                    {
+                                        foreach (string primary_attrib in primary_attribs)
+                                        {
+                                            if (primary_attrib.Trim() != "" && attribValues.Contains(primary_attrib))
+                                                showItem = false;
+                                        }
+                                    }
+
+                                    //Add misc sale item if price is greater than zero?
+                                    if (Convert.ToDouble(attribValues[2]) > 0 && attribValues.Length <= 4)
+                                    {
+                                        int attribQty = Convert.ToInt32(row["quantity"]) * Convert.ToInt32(attribValues[3]);
+
+                                        double pricePer = 0.0;
+                                        pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+
+                                        attribPrice += Convert.ToDouble(attribValues[2]);
+                                        mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(prodName) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode>ea</UOMCode><ItemType>11</ItemType>";
+                                        mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                        boxNotes.Rows.Add(prodId, prodName, attribQty);
+                                    }
+
+                                    if (attribValues.Length > 4)
+                                    {
+                                        if (!showItem)
+                                        {
+                                            prodName = attribValues[4].ToString();
+                                        }
+                                        int attribQty = Convert.ToInt32(row["quantity"]) * Convert.ToInt32(attribValues[3]);
+
+                                        double pricePer = 0.0;
+                                        if (primary_attribs != null)
+                                        {
+                                            if (!primary_attribs.Contains(attribValues[0]))
+                                            {
+                                                pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+                                            }
+                                            else
+                                            {
+                                                pricePer = (itemPrice + Convert.ToDouble(attribValues[2])) / Convert.ToDouble(attribValues[3]);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+                                        }
+
+                                        attribPrice += Convert.ToDouble(attribValues[2]);
+
+                                        mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                        mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                        boxNotes.Rows.Add(prodId, attribValues[4].ToString(), attribQty);
+                                    }
+                                }
+                                break;
+                            default:
+                                showItem = false;
+                                pack = pack.ToLower();
+                                int packIndex = pack.LastIndexOf(" pack");
+                                int prodCount = Convert.ToInt32(pack.Substring(0, packIndex));
+                                var altRegex = new Regex(@"(^Color)|(^Model)");
+
+                                // This product is a discount series pack so combine the products.
+                                if (discountPack >= 1)
+                                {
+                                    List<string> attribList = new List<string>();
+                                    attributes = FixDiscountAttribute(attributes);
+
+                                    var newAttributes = attributes.GroupBy(x => x)
+                                        .Select(x => new { x.Key, Count = x.Count() })
+                                        .ToList();
+
+                                    foreach (var a in newAttributes)
+                                    {
+                                        string[] aValues = a.Key.Split(new string[] { "|" }, StringSplitOptions.None);
+
+                                        //replace the quantity
+                                        //if it's a pack and the attribute count > 1 check to see if there's an attribute count.
+                                        if (a.Count > 1)
+                                        {
+                                            aValues[3] = a.Count.ToString();
+                                        }
+
+                                        attribList.Add(string.Join("|", aValues));
+                                    }
+
+                                    altRegex = new Regex(@"(^DiscountPack)");
+                                    foreach (var attribute in attribList.ToArray().Where(x => altRegex.IsMatch(x)))
+                                    {
+                                        string[] attribValues = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+                                        if (attribValues.Length > 4)
+                                        {
+                                            prodName = attribValues[4].ToString();
+                                            int qty = Convert.ToInt32(row["quantity"]);
+                                            int attribQty = qty * Convert.ToInt32(attribValues[3]);
+
+                                            double pricePer = itemPrice / prodCount + Convert.ToDouble(attribValues[2]);
+
+                                            mountXml += "<SalesOrderItem><ProductNumber>" + prodName + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                            mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                            boxNotes.Rows.Add(prodId, prodName, attribQty);
+                                        }
+                                    }
+
+                                    foreach (var attribute in attributes.Where(x => !altRegex.IsMatch(x)))
+                                    {
+                                        string[] mountAttr = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+                                        int mountQty = Convert.ToInt16(mountAttr[3]);
+                                        int prodQty = Convert.ToInt16(row["quantity"]);
+                                        int attribQty = prodQty * mountQty;
+                                        double pricePer = Convert.ToDouble(mountAttr[2]);
+                                        if (prodQty > 1 && mountQty > 1)
+                                        {
+                                            pricePer = pricePer * prodQty / attribQty;
+                                        }
+                                        else if (prodQty == 1 && mountQty > 1)
+                                        {
+                                            pricePer = pricePer / attribQty;
+                                        }
+
+                                        if (mountAttr[0].ToString().ToLower().Trim() == "mounting bracket")
+                                        {
+                                            if (mountAttr[1].ToString().ToLower().Trim() != "none")
+                                            {
+                                                mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                                boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
+                                            }
+                                        }
+                                        else if (mountAttr.Length > 4)
+                                        {
+                                            mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                            mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                            boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var attribute in attributes.Where(x => altRegex.IsMatch(x)))
+                                    {
+                                        string[] attribValues = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+                                        if (attribValues.Length > 4)
+                                        {
+                                            prodName = attribValues[4].ToString();
+                                            int attribQty = Convert.ToInt32(row["quantity"]) * Convert.ToInt32(attribValues[3]);
+
+                                            var qty = Convert.ToInt32(row["quantity"]);
+                                            double pricePer = itemPrice / prodCount + Convert.ToDouble(attribValues[2]);
+
+                                            mountXml += "<SalesOrderItem><ProductNumber>" + prodName + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + qty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                            mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                            boxNotes.Rows.Add(prodId, prodName, qty);
+                                        }
+                                    }
+
+                                    foreach (var attribute in attributes.Where(x => !altRegex.IsMatch(x)))
+                                    {
+                                        string[] mountAttr = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+                                        int mountQty = Convert.ToInt16(mountAttr[3]);
+                                        int prodQty = Convert.ToInt16(row["quantity"]);
+                                        int attribQty = prodQty * mountQty;
+                                        double pricePer = Convert.ToDouble(mountAttr[2]);
+                                        if (prodQty > 1 && mountQty > 1)
+                                        {
+                                            pricePer = pricePer * prodQty / attribQty;
+                                        }
+                                        else if (prodQty == 1 && mountQty > 1)
+                                        {
+                                            pricePer = pricePer / attribQty;
+                                        }
+
+                                        if (mountAttr[0].ToString().ToLower().Trim() == "mounting bracket")
+                                        {
+                                            if (mountAttr[1].ToString().ToLower().Trim() != "none")
+                                            {
+                                                mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                                boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
+                                            }
+                                        }
+                                        else if (mountAttr.Length > 4)
+                                        {
+                                            mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                            mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                            boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
+                                        }
+                                    }
+                                }
+
+                                break;
+                        }
+                        break;
+                    default:
+                        foreach (string attribute in attributes)
+                        {
+                            string[] attribValues = attribute.Split(new string[] { "|" }, StringSplitOptions.None);
+                            int attribQty = Convert.ToInt32(row["quantity"]) * Convert.ToInt32(attribValues[3]);
+                            double pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
+
+                            if (attribValues.Length > 4)
+                            {
+                                if (Convert.ToDouble(attribValues[3]) > 0)
+                                {
+                                    mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                    mountXml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                                    boxNotes.Rows.Add(prodId, attribValues[4].ToString(), attribQty);
+                                }
+                            }
+                            else
+                            {
+                                attribPrice += Convert.ToDouble(attribValues[2]);
+                                attributeNotes += WebUtility.HtmlEncode(attribValues[0].ToString()) + ": " + WebUtility.HtmlEncode(attribValues[1].ToString()) + " + $" + string.Format("{0:C}", attribValues[2]) + "\n  ";
+                            }
+                        }
+                        break;
+                }
+
+                double eaPrice = itemPrice;
+                double eaPriceTotal = eaPrice * row_qty;
+
+                string totalEachPrice = eaPrice.ToString();
+                string totalPrice = eaPriceTotal.ToString();
+
+                orderCoupons = CleanDiscountList(row["prod_id"].ToString().Trim(), order);
+                List<Coupon> categoryCoupons = orderCoupons.Where((p) =>
+                {
+                    string[] cats = p.cat_id.Split(',');
+                    return cats.Intersect(prodCatIds).Any();
+                }).ToList();
+
+                if (showItem)
+                {
+                    xml += "<SalesOrderItem><ProductNumber>" + prodName + "</ProductNumber><Description>" + prodDesc +
+                            "</Description><Taxable>" + tax + "</Taxable><Quantity>" + row_qty +
+                            "</Quantity><ProductPrice>" + totalEachPrice + "</ProductPrice><TotalPrice></TotalPrice><ItemType>10</ItemType>";
+                    xml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                    boxNotes.Rows.Add(prodId, prodName, row_qty);
+
+                    if (row["product_type"].ToString() == "clearance")
+                    {
+                        xml += "<SalesOrderItem><ProductNumber>CLEARANCE</ProductNumber><Description /><Taxable>" + tax + "</Taxable><Quantity>" + row_qty + "</Quantity><ProductPrice>0</ProductPrice><TotalPrice>0</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                        xml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                    }
+
+
+                    if (categoryCoupons.Count() > 0)
+                    {
+                        xml += BuildFinalDiscountXml(categoryCoupons.ToList());
+                        foreach (Coupon c in categoryCoupons)
+                        {
+                            appliedCategoryCoupon.Add(c.coupon_code);
+                        }
+                    }
+                }
+
+                if (mountXml != "")
+                {
+                    xml += mountXml;
+                    if (categoryCoupons.Count() > 0)
+                    {
+                        xml += BuildFinalDiscountXml(categoryCoupons.ToList());
+                        foreach (Coupon c in categoryCoupons)
+                        {
+                            appliedCategoryCoupon.Add(c.coupon_code);
+                        }
+                    }
+                }
+
+                if (rowCount != orderDetails.Rows.Count - 1)
+                {
+                    //Check next row to see if change of package.
+                    if (row["package_id"].ToString() != orderDetails.Rows[rowCount + 1]["package_id"].ToString())
+                    {
+                        //End of package. Add Subtotal.
+                        xml += "<SalesOrderItem><ProductNumber/><Description>Package Subtotal</Description><Taxable>" + tax + "</Taxable><Quantity>1</Quantity><ProductPrice/><TotalPrice/><UOMCode /><ItemType>40</ItemType><Status>10</Status><Note/><NewItemFlag>false</NewItemFlag><AdjustmentAmount/></SalesOrderItem>";
+                    }
+                }
+                else if (rowCount == orderDetails.Rows.Count - 1 && row["package_id"].ToString().Length > 0)
+                {
+                    xml += "<SalesOrderItem><ProductNumber/><Description>Package Subtotal</Description><Taxable>" + tax + "</Taxable><Quantity>1</Quantity><ProductPrice/><TotalPrice/><UOMCode /><ItemType>40</ItemType><Status>10</Status><Note/><NewItemFlag>false</NewItemFlag><AdjustmentAmount/></SalesOrderItem>";
+                }
+
+                xml += BuildDiscountXml(row, order["coupon_code"].ToString());
+
+                rowCount++;
+            }
+
+            //Add Final discounts
+            orderCoupons.RemoveAll((c) =>
+            {
+                return appliedCategoryCoupon.Distinct().Contains(c.coupon_code);
+            });
+            xml += BuildFinalDiscountXml(orderCoupons);
+
+            //Add giftcard if any
+            if (hasGiftCard)
+            {
+                foreach (KeyValuePair<string, double> giftCard in giftCardList)
+                {
+                    xml += "<SalesOrderItem><ProductNumber>GC-000</ProductNumber><Description /><Taxable>false</Taxable><Quantity>1</Quantity><ProductPrice>(" + giftCard.Value + ")</ProductPrice><TotalPrice/><UOMCode>ea</UOMCode><ItemType>10</ItemType>";
+                    xml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                }
+            }
+
+            //Add priority pricing.
+            if (priorityProcessing == 1)
+            {
+                var priorityPrice = "12.99";
+                if (containsCustomLightbar == 1)
+                {
+                    priorityPrice = "18.99";
+                }
+
+                xml += "<SalesOrderItem><ProductNumber>Priority Processing</ProductNumber><Description /><Taxable>" + tax + "</Taxable><Quantity>1</Quantity><ProductPrice>" + priorityPrice + "</ProductPrice><TotalPrice/><UOMCode /><ItemType>10</ItemType>";
+                xml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+            }
+
+            //Add reward claims
+            if (points_claimed > 0)
+            {
+                DateTime orderTime = DateTime.Parse(order["create_date"].ToString());
+                DateTime testTime = DateTime.Parse("11/11/2016 05:56:59");
+                string rewardPrice = "0.00";
+                if (orderTime < testTime)
+                {
+                    rewardPrice = (points_claimed / 50.00).ToString();
+                }
+                else
+                {
+                    rewardPrice = (points_claimed / 100.00).ToString();
+                }
+
+                xml += "<SalesOrderItem><ProductNumber>RP-000</ProductNumber><Description /><Taxable>false</Taxable><Quantity>1</Quantity><ProductPrice>(" + rewardPrice + ")</ProductPrice><TotalPrice/><UOMCode /><ItemType>10</ItemType>";
+                xml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+            }
+
+            //Add the Shipping Info
+            string shipMethod = order["shipping_method"].ToString();
+            shipMethod = shipMethod.Replace("*", "").Replace("<sup>", "").Replace("</sup>", "").Replace("®", "");
+
+            foreach (Coupon c in orderCoupons)
+            {
+                if (c.coupon_code == "STLFREESHIP" || c.coupon_code == "FREESHIP")
+                {
+                    if (shipping_method.Trim().ToLower().Equals("ups ground free shipping") || shipping_method.Trim().ToLower().Equals("free shipping"))
+                    {
+                        shipMethod = "Free Ground Shipping";
+                    }
+                }
+
+                if (c.coupon_code == "STLTAXFREE")
+                {
+                    xml = xml.Replace("<TaxRateName>Texas</TaxRateName>", "<TaxRateName>None</TaxRateName>");
+                    xml = xml.Replace("<Taxable>true</Taxable>", "<Taxable>false</Taxable>");
+                }
+            }
+
+            if (xml.IndexOf("<TaxRateName>None</TaxRateName>") > 0)
+            {
+                xml = xml.Replace("<Taxable>true</Taxable>", "<Taxable>false</Taxable>");
+            }
+
+            if (shipMethod != "None")
+            {
+                if (shipMethod.Equals("Fedex 2 Day"))
+                {
+                    shipMethod = "FedEx 2-Day";
+                }
+
+                if (shipMethod.Equals("UPS Three-Day Select"))
+                {
+                    shipMethod = "UPS Three Day Select";
+                }
+
+                if (shipMethod.Trim().ToLower().Equals("free shipping"))
+                {
+                    shipMethod = "Free Ground Shipping";
+                }
+
+                if (shipMethod == "")
+                {
+                    throw new Exception($"Web order {orderId} does not have a shipping method.");
+                }
+
+                if (isInternational && shipMethod.Equals("UPS Access Point Delivery"))
+                {
+                    xml += "<SalesOrderItem><ProductNumber>UPS International " + shipMethod.Replace("UPS ", "") + "</ProductNumber><Description/><Taxable>" + tax + "</Taxable><Quantity>1</Quantity><ProductPrice>" + order["shipping_price"].ToString() + "</ProductPrice><TotalPrice>" + order["shipping_price"].ToString() + "</TotalPrice><UOMCode /><ItemType>60</ItemType><Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                }
+                else
+                {
+                    xml += "<SalesOrderItem><ProductNumber>" + shipMethod + "</ProductNumber><Description/><Taxable>" + tax + "</Taxable><Quantity>1</Quantity><ProductPrice>" + order["shipping_price"].ToString() + "</ProductPrice><TotalPrice>" + order["shipping_price"].ToString() + "</TotalPrice><UOMCode /><ItemType>60</ItemType><Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+                }
+            }
+
+            //Add Signature Delivery if needed.
+            if (Convert.ToDecimal(order["signature_delivery"]) > 0)
+            {
+                xml += "<SalesOrderItem><ProductNumber>Signature Delivery</ProductNumber><Description/><Taxable>" + tax + "</Taxable><Quantity>1</Quantity><ProductPrice>5.90</ProductPrice><TotalPrice>5.90</TotalPrice><UOMCode /><ItemType>60</ItemType><Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
+            }
+
+            orderNote += "\r\n";
+
+            foreach (DataRow row in boxDt.Rows)
+            {
+                string sql = "prodId=" + row["product_id"].ToString() + " AND prodSku LIKE '" + row["prod_sku"].ToString() + "%'";
+                DataRow[] selectRows = boxNotes.Select(sql);
+                if (selectRows.Length > 0)
+                {
+                    row["prod_sku"] = selectRows[0]["prodSku"];
+                }
+
+                orderNote += "\r\n" + row["NAME"].ToString() + ", " + row["TOTAL_WEIGHT"].ToString() + ", " + row["qty"].ToString() + " " + row["prod_sku"].ToString();
+            }
+
+            xml = xml.Replace("[*REPLACE_NOTES*]", orderNote);
+
+            if (boxDt.Rows.Count > 0)
+            {
+
+                string JSONresult = JsonConvert.SerializeObject(boxDt);
+                string customShippingBoxes = "<Memos><Memo><Memo>{\"osco\":" + JSONresult.Replace('"', '\"') + "}</Memo><UserName>admin</UserName><DateCreated>" + time.ToString() + "</DateCreated></Memo></Memos>";
+                xml = xml.Replace("<*MEMO*>", customShippingBoxes);
+            }
+            else
+            {
+                xml = xml.Replace("<*MEMO*>", "");
+            }
+
+            xml += "</Items></SalesOrder></SOSaveRq></FbiMsgsRq></FbiXml>";
+
+            foreach (Coupon c in orderCoupons)
+            {
+                var doc = XDocument.Parse(xml);
+                bool removedFreeShipCoupon = false;
+
+                if ((c.coupon_code == "FREESHIP" || c.coupon_code == "STLFREESHIP") && shipping_method.Trim().ToLower() != "free shipping")
+                {
+                    if (carrier == "UPS International" && !removedFreeShipCoupon)
+                    {
+                        doc.Descendants("Items").Descendants("SalesOrderItem").Where(e => e.Element("ProductNumber").Value == "FREESHIP").Remove();
+                        removedFreeShipCoupon = true;
+                    }
+
+                    if (carrier == "UPS" && service != "<CarrierServiceID>3</CarrierServiceID>" && !removedFreeShipCoupon)
+                    {
+                        doc.Descendants("Items").Descendants("SalesOrderItem").Where(e => e.Element("ProductNumber").Value == "FREESHIP").Remove();
+                        removedFreeShipCoupon = true;
+                    }
+
+                    if (orderTotal < 59 && !removedFreeShipCoupon)
+                    {
+                        doc.Descendants("Items").Descendants("SalesOrderItem").Where(e => e.Element("ProductNumber").Value == "FREESHIP").Remove();
+                        removedFreeShipCoupon = true;
+                    }
+
+                    xml = doc.ToString();
+                }
+            }
+
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string GetCorrectCountry(string code, string countryCode)
+    {
+        List<KeyValuePair<string, string>> countries = new List<KeyValuePair<string, string>>()
+        {
+            new KeyValuePair<string, string>("American Samoa", "AS"),
+            new KeyValuePair<string, string>("Federated State of Micronesia", "FM"),
+            new KeyValuePair<string, string>("Guam", "GU"),
+            new KeyValuePair<string, string>("Marshall Islands", "MH"),
+            new KeyValuePair<string, string>("Northern Mariana Islands", "MP"),
+            new KeyValuePair<string, string>("Palau", "PW"),
+            new KeyValuePair<string, string>("Puerto Rico", "PR"),
+            new KeyValuePair<string, string>("Virgin Islands", "VI"),
+        };
+
+        var result = countries.Where(kvp => kvp.Value == $"{code.Trim()}");
+        string name = "";
+        string abbreviation = countryCode;
+        if (result.Count() > 0)
+        {
+            name = result.First().Key;
+            abbreviation = result.First().Value;
+        }
+
+        return abbreviation;
+    }
+
+    private int GetColorIntValue(char c)
+    {
+        int ret = 0;
+        switch (c.ToString().ToUpper())
+        {
+            case "R":
+                ret = 0;
+                break;
+            case "B":
+                ret = 1;
+                break;
+            case "A":
+                ret = 2;
+                break;
+            case "G":
+                ret = 3;
+                break;
+            case "C":
+                ret = 4;
+                break;
+            default:
+                ret = 0;
+                break;
+        }
+
+        return ret;
+    }
+
+    private List<string> RemoveValidColors(List<string> colors)
+    {
+        List<string> retColors = new List<string>();
+        string[] validColors = { "red", "blue", "amber", "green", "clear", "black", "white" };
+        foreach (var color in colors)
+        {
+            if (validColors.Contains(color.Trim().ToLower()))
+            {
+                retColors.Add(color);
+            }
+        }
+
+        return retColors;
+    }
+
+    private List<string> RemoveValidColorsForModel(List<string> colors)
+    {
+        List<string> retColors = new List<string>();
+        string[] validColors = { "red", "blue", "amber", "green", "clear", "black", "white" };
+        foreach (var color in colors)
+        {
+            if (validColors.Contains(color.Trim().ToLower()))
+            {
+                retColors.Add(color);
+            }
+        }
+
+        return retColors;
+    }
+
+
+    private string GetIntColorValue(int c)
+    {
+        string ret = "";
+        switch (c)
+        {
+            case 0:
+                ret = "R";
+                break;
+            case 1:
+                ret = "B";
+                break;
+            case 2:
+                ret = "A";
+                break;
+            case 3:
+                ret = "G";
+                break;
+            case 4:
+                ret = "C";
+                break;
+            default:
+                ret = "";
+                break;
+        }
+
+        return ret;
+    }
+
+    private string BuildColorString(List<int> data)
+    {
+        string attr = "";
+        foreach (int i in data)
+        {
+            attr += GetIntColorValue(i);
+        }
+
+        return attr;
+    }
+
+    private string buildFirstColorChar(string color)
+    {
+        List<string> colors = new List<string>();
+        colors.AddRange(color.Trim().Split(' '));
+
+        //Remove invalid colors.
+        colors = RemoveValidColors(colors);
+
+        string firstLetter = "";
+        foreach (var letter in colors)
+        {
+            firstLetter += ChangeToAmber(letter[0].ToString().Trim().ToUpper());
+        }
+
+        return firstLetter;
+    }
+
+    private string ChangeToAmber(string color)
+    {
+        if (color == "Y")
+        {
+            return "A";
+        }
+        else
+        {
+            return color;
+        }
+    }
+
+    public string BuildFinalDiscountXml(List<Coupon> coupons)
+    {
+        string xml = "";
+        foreach (Coupon c in coupons)
+        {
+            double discountAmount = 0.00;
+            string itemType = "";
+            switch (c.coupon_type)
+            {
+                case "dollar":
+                case "freeshipping":
+                case "salestaxwavedoff":
+                    discountAmount = Convert.ToDouble(c.coupon_discount);
+                    itemType = "31";
+                    break;
+                case "percentage":
+                    itemType = "30";
+                    xml += "<SalesOrderItem><ProductNumber/><Description>Subtotal</Description><Taxable>true</Taxable><Quantity>1</Quantity><ProductPrice/><TotalPrice/><UOMCode>ea</UOMCode><ItemType>40</ItemType><Status>10</Status><Note/><NewItemFlag>false</NewItemFlag><AdjustmentAmount/></SalesOrderItem>";
+                    break;
+                default:
+                    itemType = "30";
+                    xml += "<SalesOrderItem><ProductNumber/><Description>Subtotal</Description><Taxable>true</Taxable><Quantity>1</Quantity><ProductPrice/><TotalPrice/><UOMCode>ea</UOMCode><ItemType>40</ItemType><Status>10</Status><Note/><NewItemFlag>false</NewItemFlag><AdjustmentAmount/></SalesOrderItem>";
+                    break;
+
+            }
+
+            xml += "<SalesOrderItem><ProductNumber>" + c.coupon_code + "</ProductNumber><Description>" + WebUtility.HtmlEncode(c.coupon_message) + "</Description><Taxable>true</Taxable><Quantity>1</Quantity><ProductPrice>(" + discountAmount + ")</ProductPrice><TotalPrice>(" + discountAmount + ")</TotalPrice><UOMCode>ea</UOMCode><ItemType>" + itemType + "</ItemType><Status>10</Status><Note/><NewItemFlag>false</NewItemFlag><AdjustmentAmount>" + discountAmount + "</AdjustmentAmount></SalesOrderItem>";
+        }
+
+        return xml;
+    }
+
+    public string BuildDiscountXml(DataRow dr, string couponCode)
+    {
+        string xml = "";
+        if (couponCode.Length > 0)
+        {
+            List<Coupon> jsonCoupons = JsonConvert.DeserializeObject<List<Coupon>>(couponCode);
+
+            var prodId = dr["prod_id"].ToString();
+            int couponCount = (int)dr["quantity"];
+            foreach (Coupon c in jsonCoupons)
+            {
+                double discountAmount = 0.00;
+                string itemType = "";
+                var couponProdId = c.product_id;
+                if (prodId == couponProdId)
+                {
+                    //Build the xml string
+                    switch (c.coupon_type)
+                    {
+                        case "dollar":
+                        case "freeshipping":
+                        case "salestaxwavedoff":
+                            discountAmount = Convert.ToDouble(c.coupon_discount);
+                            itemType = "31";
+                            break;
+                        case "percentage":
+                            itemType = "30";
+                            break;
+                    }
+
+                    for (int x = 1; x <= couponCount; x++)
+                    {
+                        xml += "<SalesOrderItem><ProductNumber>" + c.coupon_code +
+                                "</ProductNumber><Description>COUPON: " + c.coupon_message +
+                                "</Description><Taxable>true</Taxable><Quantity>1</Quantity><ProductPrice>(" + discountAmount + ")</ProductPrice><TotalPrice>(" +
+                                discountAmount + ")</TotalPrice><UOMCode>ea</UOMCode><ItemType>" + itemType +
+                                "</ItemType><Status>10</Status><Note/><NewItemFlag>false</NewItemFlag><AdjustmentAmount>" +
+                                discountAmount + "</AdjustmentAmount></SalesOrderItem>";
+                    }
+                }
+            }
+        }
+
+        return xml;
+    }
+
+    public bool HasFullLightbar(DataTable dtCart)
+    {
+        foreach (DataRow dr in dtCart.Rows)
+        {
+            if (dr["lightbar_type"].ToString().Trim().IndexOf("FULL_LIGHTBAR_") > -1)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool HasTaxFree(DataRow dr)
+    {
+        int count = 0;
+        List<Coupon> jsonCoupons = JsonConvert.DeserializeObject<List<Coupon>>(dr["coupon_code"].ToString());
+        if (jsonCoupons != null)
+        {
+            foreach (Coupon c in jsonCoupons)
+            {
+                if (c.coupon_code == "STLTAXFREE")
+                {
+                    count++;
+                }
+            }
+        }
+
+        if (count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public List<string> GetListOfCouponCategoryIds(string couponCode)
+    {
+        List<string> returnCoupons = new List<string>();
+        if (couponCode.Length > 0)
+        {
+            List<Coupon> jsonCoupons = JsonConvert.DeserializeObject<List<Coupon>>(couponCode);
+
+            foreach (Coupon coupon in jsonCoupons)
+            {
+                if (coupon.cat_id.Length > 0 && coupon.cat_id != "0" && coupon.apply_to == "category")
+                {
+                    returnCoupons.AddRange(coupon.cat_id.Split(','));
+                }
+            }
+        }
+
+        return returnCoupons;
+    }
+
+    public List<Coupon> CleanDiscountList(string prodId, DataRow order)
+    {
+        string couponCode = order["coupon_code"].ToString().Trim();
+        List<Coupon> returnCoupons = new List<Coupon>();
+        if (couponCode.Length > 0)
+        {
+            List<Coupon> jsonCoupons = JsonConvert.DeserializeObject<List<Coupon>>(couponCode);
+
+            //var prodId = dr["prod_id"].ToString();
+            foreach (Coupon c in jsonCoupons)
+            {
+                var couponProdId = c.product_id;
+                if (prodId != couponProdId)
+                {
+                    returnCoupons.Add(c);
+                }
+            }
+        }
+
+        int index = 0;
+        bool sort = false;
+        foreach (Coupon c in returnCoupons)
+        {
+            if (c.coupon_type == "freeshipping")
+            {
+                sort = true;
+                break;
+            }
+            index++;
+        }
+
+        if (sort)
+        {
+            Coupon freeShip = returnCoupons[index];
+            returnCoupons.Add(freeShip);
+            returnCoupons.RemoveAt(index);
+        }
+
+        return returnCoupons;
+    }
+
+    public string GetCustomerInfo(string ticket, string customerName)
+    {
+        try
+        {
+            string xml = @"<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><CustomerGetRq><Name>" + customerName + "</Name></CustomerGetRq></FbiMsgsRq></FbiXml>";
+            byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
+            xml = Encoding.UTF8.GetString(xmlBytes);
+
+            string retxml = xml;
+            retxml = Regex.Replace(retxml, @">\s*<", "><");
+
+            return retxml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string ProcessDiscount(string ticket, Coupon coupon)
+    {
+        var xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><SaveDiscountRq>";
+        var couponTypeID = 10;
+        var couponType = "Amount";
+        var couponAmt = Convert.ToDouble(coupon.coupon_discount);
+        if (coupon.coupon_type == "percentage")
+        {
+            couponTypeID = 20;
+            couponType = "Percentage";
+            couponAmt = Convert.ToDouble(coupon.coupon_discount) / 100;
+        }
+
+        xml += "<Discount><Type>" + couponType + "</Type><TypeID>" + couponTypeID + "</TypeID><Name>" + coupon.coupon_code + "</Name><Description>" + EscapeXml(coupon.coupon_message) + "</Description><Percentage>" + couponAmt.ToString() + "</Percentage><TaxableFlag>True</TaxableFlag></Discount>";
+        xml += "</SaveDiscountRq></FbiMsgsRq></FbiXml>";
+
+        byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
+        xml = Encoding.UTF8.GetString(xmlBytes);
+
+        return xml;
+    }
+
+    public string ProcessCountry(string ticket, DataTable dt)
+    {
+        try
+        {
+            var xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><ImportRq><Type>ImportCountryAndState</Type><Rows>";
+            xml += $"<Row>CountryName,CountryCode</Row>";
+            foreach (DataRow dr in dt.Rows)
+            {
+                string iso = dr["iso"].ToString().Trim();
+                string name = dr["name"].ToString().Trim();
+
+                xml += $"<Row>\"{name}\",\"{iso}\"</Row>";
+
+                byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
+                xml = Encoding.UTF8.GetString(xmlBytes);
+
+            }
+            xml += "</Rows></ImportRq></FbiMsgsRq></FbiXml>";
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string ProcessState(string ticket, DataTable dt)
+    {
+        try
+        {
+            var xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><ImportRq><Type>ImportCountryAndState</Type><Rows>";
+            xml += $"<Row>CountryName,CountryCode,StateName,StateCode</Row>";
+            foreach (DataRow dr in dt.Rows)
+            {
+                string iso = dr["iso"].ToString().Trim();
+                string countryName = dr["country_name"].ToString().Trim();
+                string name = dr["name"].ToString().Trim();
+                string code = dr["code"].ToString().Trim();
+                int countryId = Convert.ToInt32(dr["country_id"]);
+
+                xml += $"<Row>\"{countryName}\",\"{iso}\",\"{name}\",\"{code}\"</Row>";
+            }
+            xml += "</Rows></ImportRq></FbiMsgsRq></FbiXml>";
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string ProcessContactInfo(string ticket, string custName, string contactinfo, int contacttype)
+    {
+        try
+        {
+            var xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><CustomerSaveRq><Customer>";
+            XmlReader xmlReader = XmlReader.Create(new StringReader(GetCustomerInfo(ticket, custName)));
+            XElement xel = XElement.Load(xmlReader);
+
+            IEnumerable<XElement> customers = from cust in xel.Descendants("Customer")
+                                              select cust;
+            foreach (XElement customer in customers)
+            {
+                var customerId = customer.Element("CustomerID").Value;
+                var customerName = customer.Element("Name").Value;
+                var accountId = customer.Element("AccountID").Value;
+                xml += "<CustomerID>" + customerId + "</CustomerID><AccountID>" + accountId + "</AccountID><JobDepth>1</JobDepth><Name>" + customerName + "</Name><Addresses><Address>";
+
+                IEnumerable<XElement> addresses = from ad in customer.Descendants("Address")
+                                                  where (string)ad.Element("Type") == "Main Office"
+                                                  select ad;
+                foreach (XElement address in addresses)
+                {
+                    var id = address.Element("ID").Value;
+                    var addressName = address.Element("Name").Value;
+                    var attn = address.Element("Attn").Value;
+                    var street = address.Element("Street").Value;
+                    var city = address.Element("City").Value;
+                    var zip = address.Element("Zip").Value;
+                    var residential = address.Element("Residential").Value;
+                    var type = address.Element("Type").Value;
+                    var state = address.Element("State").Element("Name").Value;
+                    var stateId = address.Element("State").Element("ID").Value;
+                    var stateCode = address.Element("State").Element("Code").Value;
+                    var stateCountryID = address.Element("State").Element("CountryID").Value;
+                    var country = address.Element("Country").Element("Name").Value;
+                    var countryId = address.Element("Country").Element("ID").Value;
+                    var countryCode = address.Element("Country").Element("Code").Value;
+
+                    xml += "<ID>" + id + "</ID><Name>" + addressName + "</Name><Attn>" + attn + "</Attn><Street>" + street + "</Street><City>" + city + "</City><Zip>" + zip + "</Zip><Default>true</Default><Residential>" + residential + "</Residential>";
+                    xml += "<Type>" + type + "</Type><State><ID>" + stateId + "</ID><Name>" + state + "</Name><Code>" + stateCode + "</Code><CountryID>" + stateCountryID + "</CountryID></State>";
+                    xml += "<Country><ID>" + countryId + "</ID><Name>" + country + "</Name><Code>" + countryCode + "</Code></Country><AddressInformationList>";
+
+                    var contactTypeName = "";
+                    switch (contacttype)
+                    {
+                        case 10:
+                            contactTypeName = "Home";
+                            break;
+                        case 20:
+                            contactTypeName = "Work";
+                            break;
+                        case 30:
+                            contactTypeName = "Mobile";
+                            break;
+                        case 40:
+                            contactTypeName = "Fax";
+                            break;
+                        case 50:
+                            contactTypeName = "Main";
+                            break;
+                        case 60:
+                            contactTypeName = "Email";
+                            break;
+                        case 70:
+                            contactTypeName = "Pager";
+                            break;
+                        case 80:
+                            contactTypeName = "Other";
+                            break;
+                        case 90:
+                            contactTypeName = "Web";
+                            break;
+                        default:
+                            contactTypeName = "Other";
+                            break;
+                    }
+
+                    //Check if element addressinformation list exists.
+                    bool listExists = address.Elements("AddressInformationList").Any();
+                    if (!listExists)
+                    {
+                        address.Add(new XElement("AddressInformationList"));
+                    }
+
+                    address.Element("AddressInformationList").Add(new XElement("AddressInformation", new XElement("Name", contactTypeName), new XElement("Data", contactinfo), new XElement("Default", "true"), new XElement("Type", contactTypeName)));
+                    IEnumerable<XElement> addressInfoList = from adlist in address.Descendants("AddressInformation")
+                                                            select adlist;
+
+                    foreach (XElement addressInfo in addressInfoList)
+                    {
+                        xml += addressInfo.ToString();
+                    }
+                }
+                xml += "</AddressInformationList></Address></Addresses>";
+            }
+            xml += "</Customer></CustomerSaveRq></FbiMsgsRq></FbiXml>";
+
+            byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
+            xml = Encoding.UTF8.GetString(xmlBytes);
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    private string EscapeXml(string xmlString)
+    {
+        return xmlString.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&apos;");
+    }
+
+    public string CheckIfBadName(string coname, string filename)
+    {
+        string file = AppDomain.CurrentDomain.BaseDirectory + filename;
+        string[] lines = File.ReadAllLines(file);
+
+        if (Array.IndexOf(lines, coname.Trim().ToLower()) >= 0)
+        {
+            return "";
+        }
+        else
+        {
+            if (coname.Trim().Length > 38)
+            {
+                return coname.Substring(0, 37);
+            }
+            else
+            {
+                return coname.Trim();
+            }
+        }
+    }
+
+    public bool IsBadName(string coname)
+    {
+        string file = AppDomain.CurrentDomain.BaseDirectory + "badnames.txt";
+        string[] lines = File.ReadAllLines(file);
+
+        if (Array.IndexOf(lines, coname.Trim().ToLower()) >= 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private string[] FixDiscountAttribute(string[] attributes)
+    {
+        for (int i = 0; i < attributes.Length; i++)
+        {
+            attributes[i] = Regex.Replace(attributes[i], @"(^Color \d*\|)|(^Model \d*\|)", "DiscountPack|");
+        }
+
+        return attributes;
+    }
+
+    private string SetCardinal(string cardinal)
+    {
+        if (!string.IsNullOrEmpty(cardinal))
+        {
+            return cardinal;
+        }
+        else
+        {
+            return "?";
+        }
+    }
+
+    public string GetStates(string ticket)
+    {
+        string xml = @"<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><ExecuteQueryRq><Query>SELECT * FROM stateconst</Query></ExecuteQueryRq></FbiMsgsRq></FbiXml>";
+        byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
+        xml = Encoding.UTF8.GetString(xmlBytes);
+
+        string response = xml;
+        string statuscode = GetStatusCode(response);
+
+        List<StateConst> states = new List<StateConst>();
+        if (statuscode == "1000")
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(response);
+            XmlNodeList nodes = doc.DocumentElement.SelectNodes("/FbiXml/FbiMsgsRs/ExecuteQueryRs/Rows/Row");
+            int count = 0;
+
+            foreach (XmlNode node in nodes)
+            {
+                if (count > 0)
+                {
+                    string[] values = node.InnerText.Split(',');
+                    StateConst state = new StateConst();
+                    state.ID = Convert.ToInt32(values[0].Trim().Replace("\"", ""));
+                    state.Code = values[1].Trim();
+                    state.CountryConstID = Convert.ToInt32(values[2].Trim().Replace("\"", ""));
+                    state.Name = values[3].Trim();
+                    states.Add(state);
+                }
+                count++;
+            }
+        }
+
+        FbiState fbiState = new FbiState();
+        fbiState.States = states;
+        fbiState.Response = response;
+
+        _stateList = fbiState;
+
+        return response;
+    }
+
+    public string GetCountries(string ticket)
+    {
+        string xml = @"<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><ExecuteQueryRq><Query>SELECT * FROM countryconst</Query></ExecuteQueryRq></FbiMsgsRq></FbiXml>";
+        byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
+        xml = Encoding.UTF8.GetString(xmlBytes);
+
+        string response = xml;
+        string statuscode = GetStatusCode(response);
+
+        List<CountryConst> countries = new List<CountryConst>();
+        if (statuscode == "1000")
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(response);
+            XmlNodeList nodes = doc.DocumentElement.SelectNodes("/FbiXml/FbiMsgsRs/ExecuteQueryRs/Rows/Row");
+            int count = 0;
+
+            foreach (XmlNode node in nodes)
+            {
+                if (count > 0)
+                {
+                    string[] values = node.InnerText.Split(',');
+                    CountryConst country = new CountryConst();
+                    country.ID = Convert.ToInt32(values[0].Trim().Replace("\"", ""));
+                    country.Abberviation = values[1].Trim();
+                    country.Name = values[2].Trim();
+                    countries.Add(country);
+                }
+                count++;
+            }
+        }
+
+        FbiCountry fbiCountry = new FbiCountry();
+        fbiCountry.Countries = countries;
+        fbiCountry.Response = response;
+
+        _countryList = fbiCountry;
+
+        return response;
+    }
+
+    private StatePackage CheckforStateNull(StateConst s, string ticket, string message)
+    {
+        StatePackage package = new StatePackage();
+        if (s == null)
+        {
+            package.State = null;
+            package.Response = "<?xml version=\"1.0\" encoding=\"utf-16\"?><FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRs statusCode=\"1000\"><CustomerSaveRs ";
+            package.Response += "statusCode=\"1150\" statusMessage=\"" + message + "\" /></FbiMsgsRs></FbiXml>";
+        }
+        else
+        {
+            package.State = s;
+            package.Response = null;
+        }
+
+        return package;
+    }
+
+    public string ProcessCustomer(string ticket, DataRow dr)
+    {
+        try
+        {
+            DateTime time = DateTime.Now;
+            string format = "yyyy-MM-dd" + "T" + "HH:mm:ss";
+            string phone = dr["phone"].ToString().Trim();
+
+            //Check if the company name is on the bad list.
+            string company = CheckIfBadName(dr["company"].ToString().Trim().StripIncompatableQuotes(), "badnames.txt");
+            string fullCompanyName = dr["full_company_name"].ToString().Trim().StripIncompatableQuotes();
+            string lastNum = Regex.Match(company, @"\d+$").Value;
+
+            dr["bill_country"] = GetCorrectCountry(dr["bill_state"].ToString(), dr["bill_country"].ToString());
+            dr["ship_country"] = GetCorrectCountry(dr["ship_state"].ToString(), dr["ship_country"].ToString());
+
+            string shippingMethod = dr.Table.Columns.Contains("shipping_method") ? dr["shipping_method"].ToString().Trim() : "";
+
+            if (!string.IsNullOrEmpty(company))
+            {
+                if (company.Length > 38)
+                {
+                    company = dr["company"].ToString().Substring(0, 37);
+
+                    //Add space and number to the string.
+                    if (lastNum.Length > 0)
+                    {
+                        company = company + " " + lastNum;
+                    }
+                }
+            }
+
+            string bcity = dr["bill_city"].ToString().Trim();
+            if (bcity.Length > 38)
+            {
+                bcity = bcity.Substring(0, 37);
+            }
+            bcity = WebUtility.HtmlEncode(bcity.Trim());
+
+            string bzip = dr["bill_zip"].ToString().Trim();
+            if (bzip.Length > 10)
+            {
+                if (bzip.IndexOf("-") > 0)
+                {
+                    bzip = bzip.Replace("-", "");
+                }
+                else
+                {
+                    bzip = bzip.Substring(0, 10);
+                }
+            }
+
+            string fishbowlId = WebUtility.HtmlEncode(dr["fishbowl_id"].ToString().Trim());
+            string firstLastName = (WebUtility.HtmlEncode(dr["first_name"].ToString().Trim()) + " " + WebUtility.HtmlEncode(dr["last_name"].ToString().Trim())).StripIncompatableQuotes().Trim();
+            firstLastName = dr["suffix"].ToString().Trim().Length > 0 ? firstLastName + " " + dr["suffix"].ToString().Trim() : firstLastName;
+
+            //Format phone number if US.
+            if (dr["bill_country"].ToString().Trim() == "US")
+            {
+                phone = GetFormattedPhoneNumber(phone);
+            }
+
+            string xml = @"<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><CustomerSaveRq><Customer><Status>Normal</Status><DefPaymentTerms>COD</DefPaymentTerms>";
+            xml += "<DefShipTerms>Prepaid &amp; Billed</DefShipTerms>";
+
+            //Remove & from name.
+            company = company.Replace("&", "&amp;").Trim();
+
+            if (fishbowlId.Length > 0)
+            {
+                xml += $"<Name>{fishbowlId.Trim()}</Name>";
+            }
+            else
+            {
+                xml += company.Length > 0 ? $"<Name>{company}</Name>" : $"<Name>{firstLastName}</Name>";
+            }
+
+            StateConst s;
+            StatePackage sp;
+            CountryConst c;
+
+            string billApt = WebUtility.HtmlEncode(dr["bill_apt"].ToString().Trim());
+            string billAptSuffix = WebUtility.HtmlEncode(dr["bill_apt_suffix"].ToString().Trim());
+            string billingAddress = WebUtility.HtmlEncode(dr["bill_street"].ToString().Trim());
+            if (billApt.Length > 0 && billAptSuffix.Length > 0)
+            {
+                billingAddress += "&#xA;" + billAptSuffix + " " + billApt;
+            }
+
+            xml += "<DateCreated>" + time.ToString(format) + "</DateCreated><LastChangedUser>admin</LastChangedUser><CreditLimit>0</CreditLimit>";
+
+            string taxExempt = dr["tax_exempt"].ToString().Trim().ToLower();
+            if (taxExempt == "y")
+            {
+                xml += "<TaxExempt>true</TaxExempt><TaxExemptNumber /><Note />";
+            }
+            else
+            {
+                xml += "<TaxExempt>false</TaxExempt><TaxExemptNumber /><Note />";
+            }
+            xml += "<ActiveFlag>true</ActiveFlag><AccountingID /><DefaultCarrier>UPS</DefaultCarrier><JobDepth>1</JobDepth><Addresses><Address><Name>Bill Address</Name>";
+
+            if (company.Length > 0)
+            {
+                xml += "<Attn>" + company + "</Attn>";
+                xml += "<Street>" + firstLastName + "&#xA;" + billingAddress + "</Street>";
+            }
+            else
+            {
+                xml += "<Attn>" + firstLastName + "</Attn>";
+                xml += "<Street>" + billingAddress + "</Street>";
+            }
+
+            xml += "<City>" + bcity + "</City><Zip>" + bzip + "</Zip>";
+            xml += "<Default>true</Default><Residential>false</Residential><Type>Main Office</Type><State><Name>" + WebUtility.HtmlEncode(dr["bill_state_name"].ToString()) + "</Name>";
+            xml += "<Code>" + WebUtility.HtmlEncode(dr["bill_state"].ToString()) + "</Code>";
+
+            //Refresh the state list
+            GetStates(ticket);
+
+            s = _stateList.States.Find(x => x.Code.Replace("\"", "").Trim().ToLower() == dr["bill_state"].ToString().Trim().ToLower());
+            sp = CheckforStateNull(s, ticket, "User's billing state is missing in Fishbowl.");
+            if (sp.Response != null)
+            {
+                return sp.Response;
+            }
+            else
+            {
+                xml += "<ID>" + sp.State.ID + "</ID></State>";
+            }
+            xml += "<Country><Name>" + WebUtility.HtmlEncode(dr["bill_country_name"].ToString()) + "</Name><Code>" + WebUtility.HtmlEncode(dr["bill_country"].ToString()) + "</Code>";
+
+            c = _countryList.Countries.Find(x => x.Abberviation.Contains(dr["bill_country"].ToString()));
+            if (c == null)
+            {
+                xml += "<ID>1</ID></Country>"; // Set it to unknown.
+            }
+            else
+            {
+                xml += "<ID>" + c.ID + "</ID></Country>";
+            }
+
+            if (!string.IsNullOrEmpty(company))
+            {
+                xml += "<AddressInformationList><AddressInformation><Name>" + company + "</Name><Data>" + phone + "</Data><Default>true</Default><Type>Main</Type></AddressInformation>";
+                xml += "<AddressInformation><Name>" + firstLastName + "</Name><Data>" + phone + "</Data><Default>true</Default><Type>Other</Type></AddressInformation>";
+                xml += "<AddressInformation><Name>Email</Name><Data>" + dr["user_email"].ToString() + "</Data><Default>true</Default><Type>Email</Type></AddressInformation></AddressInformationList>";
+            }
+            else
+            {
+                xml += "<AddressInformationList><AddressInformation><Name>" + firstLastName + "</Name><Data>" + phone + "</Data><Default>true</Default><Type>Main</Type></AddressInformation>";
+                xml += "<AddressInformation><Name>Email</Name><Data>" + dr["user_email"].ToString() + "</Data><Default>true</Default><Type>Email</Type></AddressInformation></AddressInformationList>";
+            }
+            xml += "</Address>";
+
+            string scity = dr["ship_city"].ToString().Trim();
+            if (scity.Length > 38)
+            {
+                scity = scity.Substring(0, 37);
+            }
+            scity = WebUtility.HtmlEncode(scity.Trim());
+
+            string szip = dr["ship_zip"].ToString().Trim();
+            if (szip.Length > 10)
+            {
+                if (szip.IndexOf("-") > 0)
+                {
+                    szip = szip.Replace("-", "");
+                }
+                else
+                {
+                    szip = szip.Substring(0, 10);
+                }
+            }
+
+            string shipApt = WebUtility.HtmlEncode(dr["ship_apt"].ToString().Trim());
+            string shipAptSuffix = WebUtility.HtmlEncode(dr["ship_apt_suffix"].ToString().Trim());
+            string shipAddress = WebUtility.HtmlEncode(dr["ship_street"].ToString().Trim());
+            if (shipApt.Length > 0 && shipAptSuffix.Length > 0)
+            {
+                shipAddress += "&#xA;" + shipAptSuffix + " " + shipApt;
+            }
+
+            if (company.Length > 0)
+            {
+                xml += "<Address><Name>Ship Address</Name><Attn>" + company + "</Attn>";
+                if (shippingMethod.ToLower().IndexOf("access point delivery") > 0)
+                {
+                    xml += "<Street>" + shipApt + "&#xA;" + firstLastName + "&#xA;" + shipAddress + "</Street>";
+                }
+                else
+                {
+                    xml += "<Street>" + firstLastName + "&#xA;" + shipAddress + "</Street>";
+                }
+            }
+            else
+            {
+                xml += "<Address><Name>Ship Address</Name><Attn>" + firstLastName + "</Attn>";
+                if (shippingMethod.ToLower().IndexOf("access point delivery") > 0)
+                {
+                    xml += "<Street>" + shipApt + "&#xA;" + shipAddress + "</Street>";
+                }
+                else
+                {
+                    xml += "<Street>" + shipAddress + "</Street>";
+                }
+            }
+
+            xml += "<City>" + scity + "</City><Zip>" + szip + "</Zip>";
+            xml += "<Default>true</Default><Residential>false</Residential><Type>Ship To</Type><State><Name>" + WebUtility.HtmlEncode(dr["ship_state_name"].ToString()) + "</Name>";
+            xml += "<Code>" + WebUtility.HtmlEncode(dr["ship_state"].ToString()) + "</Code>";
+
+            s = _stateList.States.Find(x => x.Code.Replace("\"", "").Trim().ToLower() == dr["ship_state"].ToString().Trim().ToLower());
+            sp = CheckforStateNull(s, ticket, "User's shipping state is missing in Fishbowl.");
+            if (sp.Response != null)
+            {
+                return sp.Response;
+            }
+            else
+            {
+                xml += "<ID>" + sp.State.ID + "</ID></State>";
+            }
+            xml += "<Country><Name>" + WebUtility.HtmlEncode(dr["ship_country_name"].ToString()) + "</Name><Code>" + WebUtility.HtmlEncode(dr["ship_country"].ToString()) + "</Code>";
+
+            c = _countryList.Countries.Find(x => x.Abberviation.Contains(dr["ship_country"].ToString()));
+            if (c == null)
+            {
+                xml += "<ID>1</ID></Country>"; // Set it to unknown.
+            }
+            else
+            {
+                xml += "<ID>" + c.ID + "</ID></Country>";
+            }
+            xml += "</Address></Addresses>";
+            if (dr["ship_state"].ToString().ToLower().Trim() == "tx" || dr["ship_state"].ToString().ToLower().Trim() == "texas" || dr["ship_state"].ToString().ToLower().Trim() == "tx.")
+            {
+                xml += "<TaxRate>Texas</TaxRate>";
+            }
+            else
+            {
+                xml += "<TaxRate>None</TaxRate>";
+            }
+            xml += "</Customer></CustomerSaveRq></FbiMsgsRq></FbiXml>";
+
+            return xml;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public string SendQuery(string ticket, string query)
+    {
+        try
+        {
+            StringBuilder buffer = new StringBuilder();
+            buffer.Append("{\"FbiJson\":{\"Ticket\":{\"Key\":\"" + ticket + "\"},\"FbiMsgsRq\":");
+            buffer.Append("{\"ExecuteQueryRq\":{\"Query\":\"" + query + "\"}}}}");
+            return buffer.ToString();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
