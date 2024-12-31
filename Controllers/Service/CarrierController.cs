@@ -1,26 +1,33 @@
+using System.Data;
+using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
 [Route("[controller]")]
-public class ServiceController(ServiceDbContext serviceDbContext, ILogger<ServiceController> logger) : ControllerBase
+public class ServiceController : ControllerBase
 {
-    private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
-    private readonly ILogger<ServiceController> _logger = logger;
+    private readonly ILogger<ServiceController> _logger;
+    private readonly MySqlConnection _serviceConnection;
+
+    public ServiceController(MySqlConnection serviceConnection, ILogger<ServiceController> logger)
+    {
+        _serviceConnection = serviceConnection;
+        _logger = logger;
+    }
 
     [HttpGet("carriers")]
-    public async Task<ActionResult<IEnumerable<Carrier>>> GetCarriers()
+    public async Task<IActionResult> GetCarriers()
     {
+        _logger.LogInformation("Calling GetCarriers()...");
+
+        DataSet ds = new DataSet("EligibleOrders");
+
         try
         {
-            _logger.LogInformation("Calling GetCarriers()...");
-            List<Carrier> Carriers = await _serviceDbContext.Carriers.ToListAsync();
-            _logger.LogInformation("Carrier Count:{@CarrierCount}", Carriers.Count);
-
-
-            return Ok(Carriers);
+            await _serviceConnection.OpenAsync();
+            return Ok("carriers");
         }
         catch (Exception ex)
         {

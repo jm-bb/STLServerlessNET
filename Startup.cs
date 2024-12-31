@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using System.Text.Json.Serialization;
 
 namespace STLServerlessNET;
@@ -15,16 +15,19 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
-        string? serviceDbConnString = Configuration.GetConnectionString("ServiceConnection");
-        string? webDbConnString = Configuration.GetConnectionString("WebConnection");
+        string serviceDbConnString = Configuration.GetConnectionString("ServiceConnection")!;
+        string webDbConnString = Configuration.GetConnectionString("WebConnection")!;
 
         services.AddCors();
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
-        services.AddDbContext<ServiceDbContext>(options => options.UseMySql(serviceDbConnString, ServerVersion.AutoDetect(serviceDbConnString)));
-        services.AddDbContext<WebDbContext>(options => options.UseMySql(webDbConnString, ServerVersion.AutoDetect(webDbConnString)));
+        //services.AddDbContext<ServiceDbContext>(options => options.UseMySql(serviceDbConnString, ServerVersion.AutoDetect(serviceDbConnString)));
+        //services.AddDbContext<WebDbContext>(options => options.UseMySql(webDbConnString, ServerVersion.AutoDetect(webDbConnString)));
+
+        services.AddSingleton(new MySqlConnection(serviceDbConnString));
+        services.AddSingleton(new MySqlConnection(webDbConnString));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

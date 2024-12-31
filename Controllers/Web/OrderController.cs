@@ -1,14 +1,21 @@
+using System.Data;
+using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace STLServerlessNET.Controllers.Web;
 
 [ApiController]
 [Route("web/[controller]")]
-public class OrderController(WebDbContext webDbContext, ILogger<OrderController> logger) : ControllerBase
+public class OrderController : ControllerBase
 {
-    private readonly WebDbContext _webDbContext = webDbContext;
-    private readonly ILogger<OrderController> _logger = logger;
+    private readonly ILogger<OrderController> _logger;
+    private readonly MySqlConnection _webConnection;
+
+    public OrderController(MySqlConnection webConnection, ILogger<OrderController> logger)
+    {
+        _webConnection = webConnection;
+        _logger = logger;
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderDetails(int id)
@@ -16,19 +23,20 @@ public class OrderController(WebDbContext webDbContext, ILogger<OrderController>
         _logger.LogInformation("Calling GetOrderDetails()...");
         _logger.LogInformation("Order ID:{@orderId}", id);
 
-        // Query the order by its ID and include the related User
-        var orderWithDetails = await _webDbContext.Orders
-            .Include(o => o.User)
-            .Include(o => o.Carts)
-            .ThenInclude(c => c.Product)
-            .FirstOrDefaultAsync(o => o.OrderId == id);
+        DataSet ds = new DataSet("EligibleOrders");
 
-        if (orderWithDetails == null)
+        try
         {
-            return NotFound(new { Message = $"Order with ID {id} not found." });
-        }
+            await _webConnection.OpenAsync();
+            string sql = SqlQueries.EligibleOrder.Replace("_ORDER_ID_", id.ToString());
+            MySqlDataAdapter da = new MySqlDataAdapter(sql, _webConnection);
+            da.Fill(ds);
 
-        // Return the order data
-        return Ok(orderWithDetails);
+            return Ok(ds.Tables[0]);
+        }
+        catch
+        {
+            throw;
+        }
     }
 }
