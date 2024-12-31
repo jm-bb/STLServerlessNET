@@ -12,7 +12,8 @@ public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderCon
 
     [HttpGet]
     [Route("order")]
-    public async Task<IActionResult> GetOrderDetails()
+    //public async Task<IActionResult> GetOrderDetails()
+    public async Task<ActionResult<string>> GetOrderDetails()
     {
         _logger.LogInformation("Calling GetOrderDetails()...");
         //_logger.LogInformation("Order ID:{@orderId}", id);
