@@ -21,7 +21,7 @@ public class ServiceController(MySqlConnectionFactory connectionFactory, ILogger
 
         try
         {
-            var connection = _connectionFactory.CreateConnection("WebConnection");
+            var connection = _connectionFactory.CreateConnection("ServiceConnection");
             await connection.OpenAsync();
 
             MySqlDataAdapter da = new MySqlDataAdapter(SqlQueries.Carriers, connection);
