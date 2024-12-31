@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace STLServerlessNET;
 
@@ -18,7 +19,10 @@ public class Startup
         string? webDbConnString = Configuration.GetConnectionString("WebConnection");
 
         services.AddCors();
-        services.AddControllers();
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
         services.AddDbContext<ServiceDbContext>(options => options.UseMySql(serviceDbConnString, ServerVersion.AutoDetect(serviceDbConnString)));
         services.AddDbContext<WebDbContext>(options => options.UseMySql(webDbConnString, ServerVersion.AutoDetect(webDbConnString)));
     }
