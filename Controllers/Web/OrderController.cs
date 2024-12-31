@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace STLServerlessNET.Controllers.Service;
+namespace STLServerlessNET.Controllers.Web;
 
 [ApiController]
-[Route("service/[controller]")]
-public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderController> logger) : ControllerBase
+[Route("web/[controller]")]
+public class OrderController(WebDbContext webDbContext, ILogger<OrderController> logger) : ControllerBase
 {
-    private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
+    private readonly WebDbContext _webDbContext = webDbContext;
     private readonly ILogger<OrderController> _logger = logger;
 
     [HttpGet("{id}")]
@@ -17,7 +17,7 @@ public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderCon
         _logger.LogInformation("Order ID:{@orderId}", id);
 
         // Query the order by its ID and include the related User
-        var order = await _serviceDbContext.Orders
+        var order = await _webDbContext.Orders
                                   .Include(o => o.User) // Include the related User
                                   .FirstOrDefaultAsync(o => o.OrderId == id);
 

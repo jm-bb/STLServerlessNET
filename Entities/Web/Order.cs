@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace STLServerlessNET.Entities.Service;
+namespace STLServerlessNET.Entities.Web;
 
 [Table("orders")]
 [Index("OrderId", Name = "order_id")]

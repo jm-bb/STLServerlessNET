@@ -38,11 +38,6 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute(
-                name: "GetOrderDetails",
-                pattern: "/service/order/{id:int}",
-                defaults: new { controller = "Order", action = "GetOrderDetails" });
-
-            endpoints.MapControllerRoute(
                 name: "GetCarriers",
                 pattern: "/service/carriers",
                 defaults: new { controller = "Carrier", action = "GetCarriers" });
@@ -51,6 +46,11 @@ public class Startup
                 name: "GetZones",
                 pattern: "/web/zones",
                 defaults: new { controller = "Web", action = "GetZones" });
+
+            endpoints.MapControllerRoute(
+                name: "GetOrderDetails",
+                pattern: "/web/order/{id:int}",
+                defaults: new { controller = "Order", action = "GetOrderDetails" });
         });
     }
 }

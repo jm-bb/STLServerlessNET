@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace STLServerlessNET.Entities.Service;
+namespace STLServerlessNET.Entities.Web;
 
 [Table("users")]
 [Index("UserEmail", Name = "user_email")]
