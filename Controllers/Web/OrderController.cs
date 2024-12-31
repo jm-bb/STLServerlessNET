@@ -31,7 +31,7 @@ public class OrderController(WebDatabaseService webDatabaseService, ILogger<Orde
             await _webDatabaseService.Connection.CloseAsync();
             return Ok(orderJson);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
             return StatusCode(500, "An internal server error occurred.");
