@@ -161,5 +161,5 @@ public partial class User
     [Column("converted_from_user", TypeName = "enum('Y','N')")]
     public string? ConvertedFromUser { get; set; }
 
-    public virtual ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

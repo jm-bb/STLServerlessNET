@@ -369,5 +369,5 @@ public partial class Order
     [Column("unpaid")]
     public float? Unpaid { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; }
 }

@@ -11,7 +11,7 @@ public class WebDbContext: DbContext
     {
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasOne(o => o.User).WithMany(u => u.Orders).HasForeignKey(o => o.UserId);
+            entity.HasOne(o => o.User).WithMany(u => u.Orders).HasForeignKey(o => o.UserId).IsRequired(false).OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         base.OnModelCreating(modelBuilder);
