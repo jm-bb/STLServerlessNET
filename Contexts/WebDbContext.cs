@@ -16,6 +16,7 @@ public class WebDbContext : DbContext
             .HasOne(o => o.User) // Navigation property in Order
             .WithMany(u => u.Orders) // Collection navigation property in User
             .HasForeignKey(o => o.UserId) // Foreign key in Order table
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Cart to Order (One-to-Many)
