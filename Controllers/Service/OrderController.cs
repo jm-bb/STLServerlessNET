@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
-[Route("service/[controller]")]
+[Route("[controller]")]
 public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderController> logger) : ControllerBase
 {
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
     private readonly ILogger<OrderController> _logger = logger;
 
     [HttpGet("order/{id:int}")]
-    public async Task<IActionResult> GetOrderDetails(int id)
+    public async Task<IActionResult> GetOrderDetails([FromRoute] int id)
     {
         _logger.LogInformation("Calling GetOrderDetails()...");
         _logger.LogInformation("Order ID:{@orderId}", id);
