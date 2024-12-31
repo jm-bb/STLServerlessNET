@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
-[Route("service/[controller]")]
+[Route("[controller]")]
 public class ServiceController(ServiceDbContext serviceDbContext, ILogger<ServiceController> logger) : ControllerBase
 {
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
