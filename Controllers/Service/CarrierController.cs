@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace STLServerlessNET.Controllers.Web;
+namespace STLServerlessNET.Controllers.Service;
 
 [ApiController]
-[Route("[controller]")]
+[Route("service/[controller]")]
 public class ServiceController(ServiceDbContext serviceDbContext, ILogger<ServiceController> logger) : ControllerBase
 {
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
