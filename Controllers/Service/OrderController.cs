@@ -10,8 +10,8 @@ public class OrderController(ServiceDbContext serviceDbContext, ILogger<OrderCon
     private readonly ServiceDbContext _serviceDbContext = serviceDbContext;
     private readonly ILogger<OrderController> _logger = logger;
 
-    [HttpGet("order/{id:int}")]
-    public async Task<IActionResult> GetOrderDetails([FromRoute] int id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetOrderDetails(int id)
     {
         _logger.LogInformation("Calling GetOrderDetails()...");
         _logger.LogInformation("Order ID:{@orderId}", id);

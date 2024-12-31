@@ -137,7 +137,7 @@
     "ApiURL": {
       "Description": "API endpoint URL for Prod environment",
       "Value": {
-        "Fn::Sub": "https://${ServiceApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+        "Fn::Sub": "https://${ServiceApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
       }
     },
     "ApiKeyId": {
