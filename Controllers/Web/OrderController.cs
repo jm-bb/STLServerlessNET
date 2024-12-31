@@ -31,12 +31,13 @@ public class OrderController(WebDbContext webDbContext, ILogger<OrderController>
         {
             order.OrderId,
             order.CreateDate,
-            User = new
+            User = order.User != null ? new
             {
                 order.UserId,
                 order.User.FirstName,
                 order.User.LastName
             }
+            : null
         });
     }
 }
