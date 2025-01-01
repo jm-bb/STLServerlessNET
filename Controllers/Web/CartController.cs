@@ -43,6 +43,7 @@ public class CartController(MySqlConnectionFactory connectionFactory, ILogger<Ca
             order.Columns.Add("bill_address_count", typeof(int));
             order.Columns.Add("account_name", typeof(string));
 
+            string results = "";
             foreach (DataRow dr in order.Rows)
             {
                 dr["company"] = StringHelper.StripIncompatableQuotes(dr["company"].ToString().Trim());
@@ -108,9 +109,10 @@ public class CartController(MySqlConnectionFactory connectionFactory, ILogger<Ca
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(response);
 
-                string json = JsonConvert.SerializeXmlNode(xmlDoc, Newtonsoft.Json.Formatting.Indented);
-                return Ok(json);
+                results = JsonConvert.SerializeXmlNode(xmlDoc, Newtonsoft.Json.Formatting.Indented);
             }
+
+            return Ok(results);
         }
         catch (Exception ex)
         {
