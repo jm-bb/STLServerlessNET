@@ -1,5 +1,4 @@
 using System.Data;
-using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -13,7 +12,7 @@ public class CartController(MySqlConnectionFactory connectionFactory, ILogger<Ca
     private readonly ILogger<CartController> _logger = logger;
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetCartDetails(int id)
+    public IActionResult GetCartDetails(int id)
     {
         _logger.LogInformation("Calling GetCartDetails()...");
         _logger.LogInformation("Order ID:{@orderId}", id);
