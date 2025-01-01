@@ -1,4 +1,5 @@
 using System.Data;
+using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Crud;
 using Newtonsoft.Json;
@@ -102,12 +103,14 @@ public class CartController(MySqlConnectionFactory connectionFactory, ILogger<Ca
 
                 //Get the response by adding the sales order
                 string orderType = dr["order_type"].ToString();
-
                 string response = fbh.ProcessSO(dr, orderDetails, orderType, carrierServices, shippingBoxes);
-                _logger.LogInformation(response);
-            }
 
-            return Ok("orderDetails");
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(response);
+
+                string json = JsonConvert.SerializeXmlNode(xmlDoc, Newtonsoft.Json.Formatting.Indented);
+                return Ok(json);
+            }
         }
         catch (Exception ex)
         {
