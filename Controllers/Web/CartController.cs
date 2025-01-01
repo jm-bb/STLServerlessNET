@@ -31,7 +31,7 @@ namespace STLServerlessNET.Controllers.Web
                 FishbowlHelper fbh = new();
 
                 DataTable order = wdh.GetEligibleOrders(id);
-                if (order.Rows.Count < 0)
+                if (order.Rows.Count <= 0)
                 {
                     return StatusCode(404, "No order record found.");
                 }
