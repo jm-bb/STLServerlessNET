@@ -18,20 +18,14 @@ public class CartController(MySqlConnectionFactory connectionFactory, ILogger<Ca
         _logger.LogInformation("Calling GetCartDetails()...");
         _logger.LogInformation("Order ID:{@orderId}", id);
 
-        DataSet cart = new DataSet("Cart");
-
         try
         {
             var connection = _connectionFactory.CreateConnection("WebConnection");
-            await connection.OpenAsync();
 
-            string sql = SqlQueries.OrderDetails.Replace("_ORDER_ID_", id.ToString());
-            MySqlDataAdapter da = new MySqlDataAdapter(sql, connection);
-            da.Fill(cart);
+            WebDatabaseHelper wdh = new WebDatabaseHelper(connection);
+            DataTable dt = wdh.GetOrderDetails(id);
 
-            string cartJson = JsonConvert.SerializeObject(cart.Tables[0]);
-
-            await connection.CloseAsync();
+            string cartJson = JsonConvert.SerializeObject(dt);
             return Ok(cartJson);
         }
         catch (Exception ex)
