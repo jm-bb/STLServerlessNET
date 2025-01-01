@@ -313,7 +313,7 @@ public class FishbowlHelper
         }
     }
 
-    public string ProcessSO(string ticket, DataRow order, DataTable orderDetails, string orderType, DataTable carrierServices, DataTable boxDt)
+    public string ProcessSO(DataRow order, DataTable orderDetails, string orderType, DataTable carrierServices, DataTable boxDt)
     {
         List<Coupon> orderCoupons = null;
         try
@@ -324,7 +324,7 @@ public class FishbowlHelper
             if (order["fishbowl_id"].ToString().Length <= 0)
             {
                 //This is an invalid user who has not been linked yet. Process customers first.
-                xml += "<?xml version=\"1.0\" encoding=\"utf-16\"?><FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRs statusCode=\"1000\">";
+                xml += "<?xml version=\"1.0\" encoding=\"utf-16\"?><FbiXml><Ticket><Key></Key></Ticket><FbiMsgsRs statusCode=\"1000\">";
                 xml += "<SaveSORs statusCode=\"3001\" statusMessage=\"Customer not linked. Process customer.\" /></FbiMsgsRs></FbiXml>";
                 return xml;
             }
@@ -500,7 +500,7 @@ public class FishbowlHelper
                 }
             }
 
-            xml = @"<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><SOSaveRq><SalesOrder><Note>[*REPLACE_NOTES*]</Note><Salesman>admin</Salesman><Carrier>" + carrier + "</Carrier>" + service;
+            xml = @"<FbiXml><Ticket><Key></Key></Ticket><FbiMsgsRq><SOSaveRq><SalesOrder><Note>[*REPLACE_NOTES*]</Note><Salesman>admin</Salesman><Carrier>" + carrier + "</Carrier>" + service;
 
             string tax = "true";
             string coName = order[7].ToString().Trim();
@@ -656,7 +656,7 @@ public class FishbowlHelper
             boxNotes.Columns.Add("box", typeof(string));
 
             List<string> appliedCategoryCoupon = new List<string>();
-            List<string> couponCategoryIds = GetListOfCouponCategoryIds(order["coupon_code"].ToString().Trim());
+            List<string> couponCategoryIds = getListOfCouponCategoryIds(order["coupon_code"].ToString().Trim());
             if (couponCategoryIds.Count > 0)
             {
                 //Reorder the orderDetails table.
@@ -1006,7 +1006,7 @@ public class FishbowlHelper
                 string totalEachPrice = eaPrice.ToString();
                 string totalPrice = eaPriceTotal.ToString();
 
-                orderCoupons = CleanDiscountList(row["prod_id"].ToString().Trim(), order);
+                orderCoupons = cleanDiscountList(row["prod_id"].ToString().Trim(), order);
                 List<Coupon> categoryCoupons = orderCoupons.Where((p) =>
                 {
                     string[] cats = p.cat_id.Split(',');
@@ -1519,7 +1519,7 @@ public class FishbowlHelper
         }
     }
 
-    public List<string> GetListOfCouponCategoryIds(string couponCode)
+    public List<string> getListOfCouponCategoryIds(string couponCode)
     {
         List<string> returnCoupons = new List<string>();
         if (couponCode.Length > 0)
@@ -1538,7 +1538,7 @@ public class FishbowlHelper
         return returnCoupons;
     }
 
-    public List<Coupon> CleanDiscountList(string prodId, DataRow order)
+    public List<Coupon> cleanDiscountList(string prodId, DataRow order)
     {
         string couponCode = order["coupon_code"].ToString().Trim();
         List<Coupon> returnCoupons = new List<Coupon>();
@@ -1579,7 +1579,7 @@ public class FishbowlHelper
         return returnCoupons;
     }
 
-    public string GetCustomerInfo(string ticket, string customerName)
+    public string getCustomerInfo(string ticket, string customerName)
     {
         try
         {
@@ -1676,7 +1676,7 @@ public class FishbowlHelper
         try
         {
             var xml = "<FbiXml><Ticket><Key>" + ticket + "</Key></Ticket><FbiMsgsRq><CustomerSaveRq><Customer>";
-            XmlReader xmlReader = XmlReader.Create(new StringReader(GetCustomerInfo(ticket, custName)));
+            XmlReader xmlReader = XmlReader.Create(new StringReader(getCustomerInfo(ticket, custName)));
             XElement xel = XElement.Load(xmlReader);
 
             IEnumerable<XElement> customers = from cust in xel.Descendants("Customer")

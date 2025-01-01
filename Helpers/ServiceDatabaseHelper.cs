@@ -1,14 +1,9 @@
 using MySql.Data.MySqlClient;
 using System.Data;
 
-public class ServiceDatabaseHelper
+public class ServiceDatabaseHelper(MySqlConnection connection)
 {
-    private MySqlConnection m_conn;
-    
-    public ServiceDatabaseHelper(MySqlConnection connection)
-    {
-        m_conn = connection;
-    }
+    private readonly MySqlConnection m_conn = connection;
 
     public DataTable GetProperSku(string sku)
     {
@@ -27,7 +22,41 @@ public class ServiceDatabaseHelper
         }
         finally
         {
-            m_conn.Close();
+            CleanUp();
         }
+    }
+
+    public DataTable GetCarrierServices(string carrier)
+    {
+        DataTable dt = new DataTable("Services");
+
+        try
+        {
+            string sql = "SELECT id, name FROM carrierservice WHERE carrierId=(SELECT id FROM carrier WHERE name='" + carrier + "');";
+            MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
+            da.Fill(dt);
+            return dt;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            CleanUp();
+        }
+    }
+
+    private void OpenConn()
+    {
+        if (m_conn.State != ConnectionState.Open)
+        {
+            m_conn.Open();
+        }
+    }
+
+    private void CleanUp()
+    {
+        m_conn.Close();
     }
 }
