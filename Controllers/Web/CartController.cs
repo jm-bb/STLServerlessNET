@@ -111,20 +111,8 @@ namespace STLServerlessNET.Controllers.Web
                     string orderType = dr["order_type"].ToString();
                     string response = fbh.ProcessSO(dr, orderDetails, orderType, carrierServices, shippingBoxes);
 
-                    XmlDocument xmlDoc = new XmlDocument();
+                    XmlDocument xmlDoc = new();
                     xmlDoc.LoadXml(response);
-
-                    XmlNode salesOrderNode = xmlDoc.SelectSingleNode("//SalesOrder");
-
-                    if (salesOrderNode != null)
-                    {
-                        // Convert <SalesOrder> to JSON
-                        results = JsonConvert.SerializeXmlNode(salesOrderNode, Newtonsoft.Json.Formatting.Indented);
-                    }
-                    else
-                    {
-                        return StatusCode(404, "No order information found.");
-                    }
 
                     results = JsonConvert.SerializeXmlNode(xmlDoc, Newtonsoft.Json.Formatting.Indented);
                 }

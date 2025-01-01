@@ -135,7 +135,7 @@ namespace STLServerlessNET.Helpers
 
                     attributeValueIDs = attributeValueIDs.Remove(attributeValueIDs.Length - 1, 1);
 
-                    DataTable dt = new DataTable("Attributes");
+                    DataTable dt = new("Attributes");
 
                     string sql = "SELECT fishbowl_sku FROM attribute_values WHERE attribute_value_id IN (" + attributeValueIDs.ToString() + ") AND fishbowl_sku like '" + sku + "%' AND (group_name IS NULL or TRIM(group_name) = '');";
                     MySqlCommand cmd = new(sql, m_conn);
@@ -175,11 +175,11 @@ namespace STLServerlessNET.Helpers
                 {
                     string newAttributes = "";
 
-                    string[] attributes = dr["attributes"].ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-                    List<string> primaryAttribs = new List<string>();
+                    string[] attributes = dr["attributes"].ToString().Split([";"], StringSplitOptions.RemoveEmptyEntries);
+                    List<string> primaryAttribs = [];
                     foreach (string attribute in attributes)
                     {
-                        List<string> myList = attribute.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                        List<string> myList = attribute.Split(["|"], StringSplitOptions.RemoveEmptyEntries).ToList();
 
                         string attributeValueID = myList[1];
                         if (myList.Count < 3)
@@ -230,8 +230,6 @@ namespace STLServerlessNET.Helpers
                             primaryAttribs.Add(aname);
                         }
 
-
-
                         if (aid != 2132)
                         {
                             newAttributes += string.Join("|", myList) + ";";
@@ -260,7 +258,7 @@ namespace STLServerlessNET.Helpers
             try
             {
                 string sql = "SELECT fishbowl_sku FROM attribute_values WHERE attribute_value_id=" + id.ToString();
-                MySqlCommand cmd = new MySqlCommand(sql, m_conn);
+                MySqlCommand cmd = new(sql, m_conn);
                 OpenConn();
                 var result = cmd.ExecuteScalar();
                 if (result == null)
@@ -297,12 +295,12 @@ namespace STLServerlessNET.Helpers
 
         public bool IsClearance(int prodid)
         {
-            DataSet ds = new DataSet("Category");
+            DataSet ds = new("Category");
 
             try
             {
                 string sql = @"SELECT * FROM category_product WHERE cat_id=30 AND prod_id=" + prodid.ToString();
-                MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
+                MySqlDataAdapter da = new(sql, m_conn);
                 da.Fill(ds);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
@@ -326,11 +324,11 @@ namespace STLServerlessNET.Helpers
         public void UpdateCouponString(DataRow dr)
         {
             //Free Coupons
-            List<string> freeCoupons = new List<string>(new string[] { "STLFREESHIP", "FREESHIP", "STLCSFS", "STLTAXFREE" });
-            List<string> appliedCoupons = new List<string>();
+            List<string> freeCoupons = new(["STLFREESHIP", "FREESHIP", "STLCSFS", "STLTAXFREE"]);
+            List<string> appliedCoupons = [];
 
             //Coupon list for order
-            List<string> couponCode = dr["coupon_code"].ToString().Trim().Split(',').ToList();
+            List<string> couponCode = [.. dr["coupon_code"].ToString().Trim().Split(',')];
             string[] couponDiscount = dr["coupon_discount"].ToString().TrimEnd(';').Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string c in couponDiscount)
             {
