@@ -1,62 +1,65 @@
 using MySql.Data.MySqlClient;
 using System.Data;
 
-public class ServiceDatabaseHelper(MySqlConnection connection)
+namespace STLServerlessNET.Helpers
 {
-    private readonly MySqlConnection m_conn = connection;
-
-    public DataTable GetProperSku(string sku)
+    public class ServiceDatabaseHelper(MySqlConnection connection)
     {
-        DataTable dt = new DataTable("Products");
+        private readonly MySqlConnection m_conn = connection;
 
-        try
+        public DataTable GetProperSku(string sku)
         {
-            string sql = "SELECT * FROM product WHERE partid IN (SELECT DISTINCT id FROM part WHERE num LIKE '" + sku + "%')";
-            MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
-            da.Fill(dt);
-            return dt;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        finally
-        {
-            CleanUp();
-        }
-    }
+            DataTable dt = new("Products");
 
-    public DataTable GetCarrierServices(string carrier)
-    {
-        DataTable dt = new DataTable("Services");
+            try
+            {
+                string sql = "SELECT * FROM product WHERE partid IN (SELECT DISTINCT id FROM part WHERE num LIKE '" + sku + "%')";
+                MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
+                da.Fill(dt);
+                return dt;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                CleanUp();
+            }
+        }
 
-        try
+        public DataTable GetCarrierServices(string carrier)
         {
-            string sql = "SELECT id, name FROM carrierservice WHERE carrierId=(SELECT id FROM carrier WHERE name='" + carrier + "');";
-            MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
-            da.Fill(dt);
-            return dt;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        finally
-        {
-            CleanUp();
-        }
-    }
+            DataTable dt = new("Services");
 
-    private void OpenConn()
-    {
-        if (m_conn.State != ConnectionState.Open)
-        {
-            m_conn.Open();
+            try
+            {
+                string sql = "SELECT id, name FROM carrierservice WHERE carrierId=(SELECT id FROM carrier WHERE name='" + carrier + "');";
+                MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
+                da.Fill(dt);
+                return dt;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                CleanUp();
+            }
         }
-    }
 
-    private void CleanUp()
-    {
-        m_conn.Close();
+        private void OpenConn()
+        {
+            if (m_conn.State != ConnectionState.Open)
+            {
+                m_conn.Open();
+            }
+        }
+
+        private void CleanUp()
+        {
+            m_conn.Close();
+        }
     }
 }
