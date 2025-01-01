@@ -52,7 +52,7 @@ phases:
     post_build:
         commands:
             - echo "Deploying to AWS Serverless in ${AWS_REGION}"
-            - dotnet lambda deploy-serverless --region ${AWS_REGION}
+            - dotnet lambda deploy-serverless --region ${AWS_REGION} --disable-restore-stage
 
 artifacts:
     files:
