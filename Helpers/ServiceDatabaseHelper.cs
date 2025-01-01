@@ -11,7 +11,7 @@ public class ServiceDatabaseHelper(MySqlConnection connection)
 
         try
         {
-            string sql = "SELECT * FROM PRODUCT WHERE PARTID IN (SELECT DISTINCT ID FROM PART WHERE NUM LIKE '" + sku + "%')";
+            string sql = "SELECT * FROM product WHERE partid IN (SELECT DISTINCT id FROM part WHERE num LIKE '" + sku + "%')";
             MySqlDataAdapter da = new MySqlDataAdapter(sql, m_conn);
             da.Fill(dt);
             return dt;
