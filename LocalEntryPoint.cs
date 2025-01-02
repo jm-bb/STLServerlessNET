@@ -15,5 +15,9 @@ public class LocalEntryPoint
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
+                webBuilder.ConfigureKestrel((context, options) =>
+                {
+                    options.Configure(context.Configuration.GetSection("Kestrel"));
+                });
             });
 }

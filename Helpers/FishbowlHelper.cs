@@ -428,7 +428,7 @@ namespace STLServerlessNET.Helpers
                                             pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
 
                                             attribPrice += Convert.ToDouble(attribValues[2]);
-                                            mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(prodName) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode>ea</UOMCode><ItemType>11</ItemType>";
+                                            mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(prodName) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode>ea</UOMCode><ItemType>11</ItemType>";
                                             mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                             boxNotes.Rows.Add(prodId, prodName, attribQty);
                                         }
@@ -457,7 +457,7 @@ namespace STLServerlessNET.Helpers
 
                                             attribPrice += Convert.ToDouble(attribValues[2]);
 
-                                            mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                            mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                             mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                             boxNotes.Rows.Add(prodId, attribValues[4].ToString(), attribQty);
                                         }
@@ -487,7 +487,7 @@ namespace STLServerlessNET.Helpers
                                             pricePer = Convert.ToDouble(attribValues[2]) / Convert.ToDouble(attribValues[3]);
 
                                             attribPrice += Convert.ToDouble(attribValues[2]);
-                                            mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(prodName) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode>ea</UOMCode><ItemType>11</ItemType>";
+                                            mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(prodName) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode>ea</UOMCode><ItemType>11</ItemType>";
                                             mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                             boxNotes.Rows.Add(prodId, prodName, attribQty);
                                         }
@@ -519,7 +519,7 @@ namespace STLServerlessNET.Helpers
 
                                             attribPrice += Convert.ToDouble(attribValues[2]);
 
-                                            mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                            mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                             mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                             boxNotes.Rows.Add(prodId, attribValues[4].ToString(), attribQty);
                                         }
@@ -568,7 +568,7 @@ namespace STLServerlessNET.Helpers
 
                                                 double pricePer = itemPrice / prodCount + Convert.ToDouble(attribValues[2]);
 
-                                                mountXml += "<SalesOrderItem><ProductNumber>" + prodName + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + prodName + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                                 mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                                 boxNotes.Rows.Add(prodId, prodName, attribQty);
                                             }
@@ -594,14 +594,14 @@ namespace STLServerlessNET.Helpers
                                             {
                                                 if (mountAttr[1].ToString().ToLower().Trim() != "none")
                                                 {
-                                                    mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                    mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                                     mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                                     boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
                                                 }
                                             }
                                             else if (mountAttr.Length > 4)
                                             {
-                                                mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                                 mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                                 boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
                                             }
@@ -620,7 +620,7 @@ namespace STLServerlessNET.Helpers
                                                 var qty = Convert.ToInt32(row["quantity"]);
                                                 double pricePer = itemPrice / prodCount + Convert.ToDouble(attribValues[2]);
 
-                                                mountXml += "<SalesOrderItem><ProductNumber>" + prodName + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + qty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + prodName + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + qty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                                 mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                                 boxNotes.Rows.Add(prodId, prodName, qty);
                                             }
@@ -646,14 +646,14 @@ namespace STLServerlessNET.Helpers
                                             {
                                                 if (mountAttr[1].ToString().ToLower().Trim() != "none")
                                                 {
-                                                    mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                    mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                                     mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                                     boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
                                                 }
                                             }
                                             else if (mountAttr.Length > 4)
                                             {
-                                                mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                                mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(mountAttr[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(mountAttr[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + mountAttr[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                                 mountXml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                                 boxNotes.Rows.Add(prodId, mountAttr[4].ToString(), attribQty);
                                             }
@@ -674,7 +674,7 @@ namespace STLServerlessNET.Helpers
                                 {
                                     if (Convert.ToDouble(attribValues[3]) > 0)
                                     {
-                                        mountXml += "<SalesOrderItem><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                                        mountXml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + WebUtility.HtmlEncode(attribValues[4].ToString()) + "</ProductNumber><Description>" + WebUtility.HtmlEncode(attribValues[1].ToString()) + "</Description><Taxable>" + tax + "</Taxable><Quantity>" + attribQty + "</Quantity><ProductPrice>" + pricePer + "</ProductPrice><TotalPrice>" + attribValues[2].ToString() + "</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                                         mountXml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                                         boxNotes.Rows.Add(prodId, attribValues[4].ToString(), attribQty);
                                     }
@@ -703,7 +703,7 @@ namespace STLServerlessNET.Helpers
 
                     if (showItem)
                     {
-                        xml += "<SalesOrderItem><ProductNumber>" + prodName + "</ProductNumber><Description>" + prodDesc +
+                        xml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + prodName + "</ProductNumber><Description>" + prodDesc +
                                 "</Description><Taxable>" + tax + "</Taxable><Quantity>" + row_qty +
                                 "</Quantity><ProductPrice>" + totalEachPrice + "</ProductPrice><TotalPrice></TotalPrice><ItemType>10</ItemType>";
                         xml += "<Note>" + attributeNotes + "</Note><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
@@ -711,7 +711,7 @@ namespace STLServerlessNET.Helpers
 
                         if (row["product_type"].ToString() == "clearance")
                         {
-                            xml += "<SalesOrderItem><ProductNumber>CLEARANCE</ProductNumber><Description /><Taxable>" + tax + "</Taxable><Quantity>" + row_qty + "</Quantity><ProductPrice>0</ProductPrice><TotalPrice>0</TotalPrice><UOMCode /><ItemType>10</ItemType>";
+                            xml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>CLEARANCE</ProductNumber><Description /><Taxable>" + tax + "</Taxable><Quantity>" + row_qty + "</Quantity><ProductPrice>0</ProductPrice><TotalPrice>0</TotalPrice><UOMCode /><ItemType>10</ItemType>";
                             xml += "<Note/><NewItemFlag>false</NewItemFlag></SalesOrderItem>";
                         }
 
@@ -1027,7 +1027,7 @@ namespace STLServerlessNET.Helpers
 
                         for (int x = 1; x <= couponCount; x++)
                         {
-                            xml += "<SalesOrderItem><ProductNumber>" + c.coupon_code +
+                            xml += "<SalesOrderItem><ProdID>" + prodId + "</ProdID><ProductNumber>" + c.coupon_code +
                                     "</ProductNumber><Description>COUPON: " + c.coupon_message +
                                     "</Description><Taxable>true</Taxable><Quantity>1</Quantity><ProductPrice>(" + discountAmount + ")</ProductPrice><TotalPrice>(" +
                                     discountAmount + ")</TotalPrice><UOMCode>ea</UOMCode><ItemType>" + itemType +
@@ -1141,18 +1141,111 @@ namespace STLServerlessNET.Helpers
 
         public bool IsBadName(string coname)
         {
-            string file = AppDomain.CurrentDomain.BaseDirectory + "badnames.txt";
-            string[] lines = File.ReadAllLines(file);
+            // String array of bad names
+            string[] badNames =
+            [
+                "nope",
+                "none",
+                "na",
+                "self",
+                "fire",
+                "home",
+                "police",
+                "private",
+                "vfd",
+                "-",
+                "mr",
+                "yes",
+                "no",
+                "self employed",
+                "individual",
+                "freelance",
+                "law enforcement",
+                "wrecker/towing",
+                "other",
+                "mr. and mrs.",
+                "me",
+                ".",
+                "volunteer",
+                "white rose pilot car",
+                "--------",
+                "select one",
+                "deputy",
+                "volunteer fire",
+                "city hall",
+                "retired from dte energy",
+                "test",
+                "retired",
+                "public safety",
+                "off duty services",
+                "fire rescue",
+                "snow removal services",
+                "pd",
+                "mr.",
+                "firefighter",
+                "mastec",
+                "central",
+                "volunteer fireman",
+                "pavetex",
+                "security",
+                "fire department",
+                "sfd",
+                "?",
+                "persona;",
+                "personal",
+                "personal (utility locator)",
+                "personal (volunteer firefighter)",
+                "personal - snow plow",
+                "personal account",
+                "personal card",
+                "personal dot",
+                "personal order",
+                "personal pov",
+                "personal purchase",
+                "personal rr contractor",
+                "personal sec",
+                "personal security vehicle",
+                "personal truck",
+                "personal use",
+                "personal use volunteer firefighter",
+                "personal vehicle",
+                "personel",
+                "pernaonal",
+                "perosnal",
+                "myself",
+                "n//a",
+                "n/a (personal use)",
+                "n/a at the moment",
+                "n/a us army mp",
+                "n/a-gift for son-firefighter",
+                "n/a.",
+                "n/k",
+                "n\\a",
+                "n/a",
+                "n-a",
+                "n.a",
+                "no answer",
+                "no company",
+                "nobody",
+                "no affiliates",
+                "non",
+                "non-affliated",
+                "none",
+                "none but mine",
+                "none company",
+                "none mike",
+                "none/personal",
+                "noneya",
+                "nonw",
+                "nonya",
+                "nope",
+                "*"
+            ];
 
-            if (Array.IndexOf(lines, coname.Trim().ToLower()) >= 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // Check if the input name exists in the bad names list
+            return Array.IndexOf(badNames, coname.Trim().ToLower()) >= 0;
         }
+
 
         private string[] FixDiscountAttribute(string[] attributes)
         {
