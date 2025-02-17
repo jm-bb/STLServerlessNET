@@ -1,7 +1,6 @@
 using System.Data;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
-using Mysqlx.Crud;
 using Newtonsoft.Json;
 using STLServerlessNET.Helpers;
 
@@ -111,8 +110,8 @@ namespace STLServerlessNET.Controllers.Web
                     string orderType = dr["order_type"].ToString();
                     string response = fbh.ProcessSO(dr, orderDetails, orderType, carrierServices, shippingBoxes);
 
-                    XmlDocument xmlDoc = new();
-                    xmlDoc.LoadXml(response);
+                    //Generate the line numbers
+                    XmlDocument xmlDoc = fbh.AddLineNumbers(response);
 
                     results = JsonConvert.SerializeXmlNode(xmlDoc, Newtonsoft.Json.Formatting.Indented);
                 }

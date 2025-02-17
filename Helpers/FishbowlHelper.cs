@@ -4,6 +4,7 @@ using System.Data;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using STLServerlessNET.Models;
+using System.Xml;
 
 namespace STLServerlessNET.Helpers
 {
@@ -1268,5 +1269,32 @@ namespace STLServerlessNET.Helpers
                 return "?";
             }
         }
+
+        public XmlDocument AddLineNumbers(string doc)
+        {
+            XmlDocument xmlDoc = new();
+            xmlDoc.LoadXml(doc);
+
+            // Get all SalesOrderItem elements inside Items
+            XmlNodeList salesOrderItems = xmlDoc.SelectNodes("//Items/SalesOrderItem");
+
+            if (salesOrderItems != null)
+            {
+                int lineNumber = 1;
+                foreach (XmlNode item in salesOrderItems)
+                {
+                    // Create new LineNumber element
+                    XmlElement lineNumberElement = xmlDoc.CreateElement("LineNumber");
+                    lineNumberElement.InnerText = lineNumber.ToString();
+
+                    // Append LineNumber element to the current SalesOrderItem
+                    item.AppendChild(lineNumberElement);
+
+                    lineNumber++;
+                }
+            }
+
+            return xmlDoc;
+        } 
     }
 }
