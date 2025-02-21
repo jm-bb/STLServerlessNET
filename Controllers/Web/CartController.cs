@@ -111,7 +111,7 @@ namespace STLServerlessNET.Controllers.Web
                     string response = fbh.ProcessSO(dr, orderDetails, orderType, carrierServices, shippingBoxes);
 
                     //Generate the line numbers
-                    XmlDocument xmlDoc = fbh.AddLineNumbers(response);
+                    XmlDocument xmlDoc = fbh.AddLineNumbers(response, true);
 
                     results = JsonConvert.SerializeXmlNode(xmlDoc, Newtonsoft.Json.Formatting.Indented);
                 }
