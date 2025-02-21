@@ -834,7 +834,11 @@ namespace STLServerlessNET.Helpers
                     xml = xml.Replace("<Taxable>true</Taxable>", "<Taxable>false</Taxable>");
                 }
 
-                if (shipMethod != "None")
+                if (shipMethod == "None" || string.IsNullOrWhiteSpace(shipMethod))
+                {
+                    //Do nothing
+                }
+                else
                 {
                     if (shipMethod.Equals("Fedex 2 Day"))
                     {
@@ -849,11 +853,6 @@ namespace STLServerlessNET.Helpers
                     if (shipMethod.Trim().ToLower().Equals("free shipping"))
                     {
                         shipMethod = "Free Ground Shipping";
-                    }
-
-                    if (shipMethod == "")
-                    {
-                        throw new Exception($"Web order {orderId} does not have a shipping method.");
                     }
 
                     if (isInternational && shipMethod.Equals("UPS Access Point Delivery"))
