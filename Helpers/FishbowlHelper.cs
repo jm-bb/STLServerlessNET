@@ -1269,9 +1269,9 @@ namespace STLServerlessNET.Helpers
             }
         }
 
-        public XmlDocument AddLineNumbers(string doc)
+        public XmlDocument AddLineNumbers(string doc, bool includeAllItemTypes = false)
         {
-            XmlDocument xmlDoc = new();
+            XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(doc);
 
             // Get all SalesOrderItem elements inside Items
@@ -1282,18 +1282,28 @@ namespace STLServerlessNET.Helpers
                 int lineNumber = 1;
                 foreach (XmlNode item in salesOrderItems)
                 {
-                    // Create new LineNumber element
-                    XmlElement lineNumberElement = xmlDoc.CreateElement("LineNumber");
-                    lineNumberElement.InnerText = lineNumber.ToString();
+                    // Get the ItemType element for this SalesOrderItem
+                    XmlNode itemTypeNode = item.SelectSingleNode("ItemType");
 
-                    // Append LineNumber element to the current SalesOrderItem
-                    item.AppendChild(lineNumberElement);
+                    // Check if we should add LineNumber based on the flag and ItemType
+                    bool shouldAddLineNumber = includeAllItemTypes ||
+                        (itemTypeNode != null && itemTypeNode.InnerText == "10");
 
-                    lineNumber++;
+                    if (shouldAddLineNumber)
+                    {
+                        // Create new LineNumber element
+                        XmlElement lineNumberElement = xmlDoc.CreateElement("LineNumber");
+                        lineNumberElement.InnerText = lineNumber.ToString();
+
+                        // Append LineNumber element to the current SalesOrderItem
+                        item.AppendChild(lineNumberElement);
+
+                        lineNumber++;
+                    }
                 }
             }
 
             return xmlDoc;
-        } 
+        }
     }
 }
